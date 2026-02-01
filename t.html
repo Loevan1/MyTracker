@@ -1,145 +1,474 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Révélation par bruit avec timer</title>
-  <style>
-    *{
-      font-size: 50px;
-      padding: 0;
-      margin: 0;
-    }
-    body {
-      background: #111;
-      color: white;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      gap: 12px;
-      
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#111111">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Révélation des départements</title>
+<link rel="manifest" href="manifest.json">
 
+<style>
+* {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
 
-    canvas {
-      margin-top: 100px;
-      background: #111;
-      
-    }
+body {
+  background:#111;
+  color:white;
+  font-family:sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+  padding:20px;
+  font-size: 50px;
+  height: 95svh;
+  margin: 0;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
 
-    .controls {
-      display:flex;
-      gap: 50px;
-      align-items: center;
-      margin-bottom: 50px;
-    }
+a{
+  text-decoration: none;
+  color: black;
+}
 
-    button {
-      padding: 8px 16px;  
-      cursor: pointer;
-    }
+button, input{
+  border-radius: 30px;
+}
 
-    input {
-      padding: 8px;  
-      font-size: 40px;
-      text-align: right;
-    }
+canvas {
+  background:#111;
+  width: 100%;
+  max-width: 900px;
+  height: auto;
+  margin-bottom: 10px;
+  touch-action: none;
+}
 
-    #timer {
-      font-weight: bold;
-      font-size: 60px;
-    }
-  </style>
+.controls {
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+button {
+  padding:8px 16px;
+  margin: 40px;
+  font-size: 40px;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+
+#timerDuration{
+  padding: 2px; 
+  width: 150px; 
+  font-size: 35px;
+  text-align: center;
+}
+
+#timer { 
+  font-size:60px;
+  font-weight: bold;
+  margin: 40px; 
+}
+
+.stats { 
+  display:flex; 
+  gap:20px; 
+  font-size: 40px; 
+}
+
+#temps{
+  display: flex;
+  gap: 20px;
+  font-size: 40px;
+  align-items: center;
+}
+
+#installPrompt {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #4CAF50;
+  color: white;
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-size: 30px;
+  display: none;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 30px;
+  }
+  button {
+    font-size: 25px;
+    margin: 20px;
+    padding: 6px 12px;
+  }
+  #timer {
+    font-size: 40px;
+    margin: 20px;
+  }
+  .stats, #temps {
+    font-size: 25px;
+  }
+  #timerDuration {
+    font-size: 25px;
+    width: 100px;
+  }
+  #installPrompt {
+    font-size: 20px;
+    padding: 10px 20px;
+  }
+}
+</style>
 </head>
+
 <body>
 
+<div id="installPrompt">
+  <button id="installBtn">Installer l'application</button>
+</div>
 
+<div id="temps">
+<label>Timer : </label>
+  <input id="timerDuration" type="number" value="30" >
+  <span>min</span>
+</div>
 
 <div class="controls">
-  <label>Durée timer :</label>
-  <input type="number" id="timerDuration" value="1800" min="1" max="3600" step="1">
   <button id="start">Démarrer</button>
+  <button id="reset">Reset total</button>
+  <button><a href="index.html">Accueil</a></button>
 </div>
+
+<div class="stats">
+  <div id="progress">Progression : 0%</div>
+</div>
+
 <div id="timer">Temps : 0s</div>
 <canvas id="canvas"></canvas>
 
 <script>
+/* ===================== PWA Installation ===================== */
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installPrompt').style.display = 'block';
+});
+
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('installPrompt').style.display = 'none';
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  document.getElementById('installPrompt').style.display = 'none';
+});
+
+/* ===================== Service Worker ===================== */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(err => {
+    console.log('Service Worker registration failed:', err);
+  });
+}
+
+/* ===================== Wake Lock pour garder l'écran allumé ===================== */
+let wakeLock = null;
+
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+    }
+  } catch (err) {
+    console.log('Wake Lock error:', err);
+  }
+}
+
+/* ===================== DONNÉES ===================== */
+const departments = [
+  { num:"01", name:"Ain" }, { num:"02", name:"Aisne" },
+  { num:"03", name:"Allier" }, { num:"04", name:"Alpes-de-Haute-Provence" },
+  { num:"05", name:"Hautes-Alpes" }, { num:"06", name:"Alpes-Maritimes" },
+];
+
+const BLOCK_SIZE = 1;
+
+/* ===================== ÉTAT GLOBAL ===================== */
+const state = {
+  deptIndex: 0,
+  revealed: 0,
+  totalTime: 0,
+  running: false,
+  startTime: null,
+  blocks: [],
+  img: null,
+  intervalId: null,
+  realStartTimestamp: null
+};
+
+/* ===================== DOM ===================== */
+const son = new Audio('notif.mp3');
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const timerDiv = document.getElementById("timer");
+const progressDiv = document.getElementById("progress");
 const startBtn = document.getElementById("start");
-const timerDurationInput = document.getElementById("timerDuration");
-const animDurationInput = document.getElementById("animDuration");
+const resetBtn = document.getElementById("reset");
+const timerInput = document.getElementById("timerDuration");
+const animInput = 3600;
 
-const img = new Image();
-img.src = "morbihan.png";
+/* ===================== STORAGE ===================== */
+function loadGlobal() {
+  const stored = localStorage.getItem("global");
+  return stored ? JSON.parse(stored) : {
+    deptIndex: 0,
+    completed: []
+  };
+}
 
-const blockSize = 2;
-let blocks = [];
-let revealed = 0;
-let startTime = null;
-let running = false;
-let timerDuration = 1800;
-let animDuration = 3600;
+function saveGlobal(data) {
+  localStorage.setItem("global", JSON.stringify(data));
+}
 
-img.onload = () => {
-  canvas.width = img.width;
-  canvas.height = img.height;
+function loadDept(num) {
+  const stored = localStorage.getItem("dept_" + num);
+  return stored ? JSON.parse(stored) : null;
+}
 
-  for (let y = 0; y < canvas.height; y += blockSize) {
-    for (let x = 0; x < canvas.width; x += blockSize) {
-      blocks.push({ x, y });
-    }
+function saveDept(num) {
+  localStorage.setItem("dept_" + num, JSON.stringify({
+    revealed: state.revealed,
+    totalTime: state.totalTime
+  }));
+}
+
+function saveTimerState() {
+  if (state.running && state.realStartTimestamp) {
+    localStorage.setItem("activeTimer", JSON.stringify({
+      deptNum: departments[state.deptIndex].num,
+      startTimestamp: state.realStartTimestamp,
+      totalTime: state.totalTime,
+      timerDuration: parseFloat(timerInput.value) * 60
+    }));
   }
+}
 
-  blocks.sort(() => Math.random() - 0.5);
-};
+function loadTimerState() {
+  const stored = localStorage.getItem("activeTimer");
+  return stored ? JSON.parse(stored) : null;
+}
 
-startBtn.onclick = () => {
-  timerDuration = parseFloat(timerDurationInput.value) || 5;
-  animDuration = 3600;
+function clearTimerState() {
+  localStorage.removeItem("activeTimer");
+}
+
+/* ===================== LOGIQUE ===================== */
+function loadDepartment() {
+  const global = loadGlobal();
+  state.deptIndex = global.deptIndex;
+  const dept = departments[state.deptIndex];
   
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  revealed = 0;
-  startTime = null;
-  running = true;
+  state.revealed = 0;
+  state.totalTime = 0;
+  state.blocks = [];
+  state.running = false;
 
-  requestAnimationFrame(loop);
-};
+  state.img = new Image();
+  state.img.src = `departements/dept_${dept.num}.png`;
 
-function loop(timestamp) {
-  if (!running) return;
+  state.img.onload = () => {
+    canvas.width = state.img.width;
+    canvas.height = state.img.height;
 
-  if (!startTime) startTime = timestamp;
+    for (let y=0;y<canvas.height;y+=BLOCK_SIZE) {
+      for (let x=0;x<canvas.width;x+=BLOCK_SIZE) {
+        state.blocks.push({x,y});
+      }
+    }
 
-  const elapsed = (timestamp - startTime) / 1000;
-  const timeLeft = Math.max(0, timerDuration - elapsed);
+    state.blocks.sort(()=>Math.random()-0.5);
+
+    const saved = loadDept(dept.num);
+    if (saved) {
+      state.revealed = Math.min(saved.revealed, state.blocks.length);
+      state.totalTime = saved.totalTime;
+      redraw();
+    }
+
+    updateUI();
+    checkForActiveTimer();
+  };
+}
+
+function checkForActiveTimer() {
+  const timerState = loadTimerState();
+  if (!timerState) return;
   
-  timerDiv.textContent = `Temps : ${timeLeft.toFixed(0)}s`;
+  const dept = departments[state.deptIndex];
+  if (timerState.deptNum !== dept.num) {
+    clearTimerState();
+    return;
+  }
+  
+  const now = Date.now();
+  const elapsedReal = (now - timerState.startTimestamp) / 1000;
+  
+  state.totalTime = timerState.totalTime;
+  timerInput.value = (timerState.timerDuration / 60).toFixed(0);
+  
+  if (elapsedReal < timerState.timerDuration) {
+    state.realStartTimestamp = timerState.startTimestamp;
+    state.startTime = performance.now() - (elapsedReal * 1000);
+    state.running = true;
+    state.intervalId = setInterval(loop, 16);
+  } else {
+    const total = state.totalTime + timerState.timerDuration;
+    const target = Math.floor((total / animInput) * state.blocks.length);
+    state.revealed = Math.min(target, state.blocks.length);
+    redraw();
+    updateUI();
+    clearTimerState();
+  }
+}
 
-  if (timeLeft <= 0) {
-    running = false;
-    timerDiv.textContent = `Temps : 0.0s`;
+function redraw() {
+  for (let i=0;i<state.revealed;i++) {
+    const b = state.blocks[i];
+    ctx.drawImage(state.img, b.x,b.y,1,1, b.x,b.y,1,1);
+  }
+}
+
+function updateUI() {
+  const pct = ((state.revealed/state.blocks.length)*100||0).toFixed(1);
+  progressDiv.textContent = `Progression : ${pct}%`;
+}
+
+function completeDepartment() {
+  const global = loadGlobal();
+  const dept = departments[state.deptIndex].num;
+
+  if (!global.completed.includes(dept))
+    global.completed.push(dept);
+
+  global.deptIndex++;
+  saveGlobal(global);
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  clearTimerState();
+
+  if (global.deptIndex >= departments.length) {
+    timerDiv.textContent = "Bravo";
     return;
   }
 
-  const progress = elapsed / animDuration;
-  const targetCount = Math.floor(progress * blocks.length);
+  loadDepartment();
+}
 
-  while (revealed < targetCount && revealed < blocks.length) {
-    const b = blocks[revealed];
-    ctx.drawImage(
-      img,
-      b.x, b.y, blockSize, blockSize,
-      b.x, b.y, blockSize, blockSize
-    );
-    revealed++;
+/* ===================== ANIMATION ===================== */
+function loop() {
+  if (!state.running) return;
+
+  const now = Date.now();
+  const elapsedReal = (now - state.realStartTimestamp) / 1000;
+  const timerDurationSeconds = parseFloat(timerInput.value) * 60;
+  const timeLeft = Math.max(0, timerDurationSeconds - elapsedReal);
+  const tempsrestantmin = Math.floor(timeLeft / 60);
+  const tempsrestantsec = Math.floor(timeLeft % 60).toString().padStart(2, "0");
+
+  timerDiv.textContent = `Temps : ${tempsrestantmin}m ${tempsrestantsec}s`;
+
+  const total = state.totalTime + elapsedReal;
+  const target = Math.floor((total / animInput) * state.blocks.length);
+
+  while (state.revealed < target && state.revealed < state.blocks.length) {
+    const b = state.blocks[state.revealed];
+    ctx.drawImage(state.img,b.x,b.y,1,1,b.x,b.y,1,1);
+    state.revealed++;
   }
 
-  requestAnimationFrame(loop);
+  updateUI();
+
+  if (state.revealed >= state.blocks.length) {
+    state.running = false;
+    clearInterval(state.intervalId);
+    clearTimerState();
+    son.play();
+    saveDept(departments[state.deptIndex].num);
+    setTimeout(completeDepartment, 1200);
+    return;
+  }
+
+  if (timeLeft <= 0) {
+    state.running = false;
+    clearInterval(state.intervalId);
+    state.totalTime += elapsedReal;
+    clearTimerState();
+    son.play();
+    saveDept(departments[state.deptIndex].num);
+    return;
+  }
 }
+
+/* ===================== EVENTS ===================== */
+startBtn.onclick = () => {
+  if (state.running) return;
+  state.realStartTimestamp = Date.now();
+  state.startTime = performance.now();
+  state.running = true;
+  
+  requestWakeLock();
+  saveTimerState();
+  
+  state.intervalId = setInterval(loop, 16);
+};
+
+resetBtn.onclick = () => {
+  if (!confirm("Tout supprimer ?")) return;
+  if (state.running) {
+    clearInterval(state.intervalId);
+    state.running = false;
+  }
+  localStorage.clear();
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  loadDepartment();
+};
+
+setInterval(() => {
+  if (state.running) {
+    saveTimerState();
+  }
+}, 1000);
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && state.running) {
+    saveTimerState();
+  } else if (!document.hidden && state.running) {
+    loop();
+  }
+});
+
+/* ===================== INIT ===================== */
+loadDepartment();
 </script>
 
 </body>

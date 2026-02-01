@@ -3,7 +3,7 @@
 const inputTache = document.querySelector('input[type="text"]');
 const selectCategorie = document.getElementById("categories");
 const rangeDuree = document.getElementById("dureeRange");
-const inputDate = document.querySelector('input[type="datetime-local"]');
+const inputDate = document.querySelector('input[type="date"]');
 
 // conteneur d'affichage
 const container = document.createElement("div");
@@ -29,19 +29,32 @@ function saveTaches(taches) {
 function afficherTaches() {
   container.innerHTML = "<h2>Mes tâches</h2>";
   const taches = getTaches();
-
-  taches.forEach((tache, index) => {
+  const tachesTriees = taches.slice().sort((a, b) => {
+    // Tâches sans date à la fin
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    // Comparer les dates
+    return new Date(a.date) - new Date(b.date);
+  });
+  tachesTriees.forEach((tache, index) => {
     const div = document.createElement("div");
-    div.style.border = "1px solid #ccc";
+    div.style.border = "1px solid #000000";
     div.style.margin = "5px";
     div.style.padding = "5px";
-
+    div.style.borderRadius = " 10px"
+    div.className = "tache-card";
     div.innerHTML = `
-      <strong>${tache.nom}</strong><br>
-      Catégorie : ${tache.categorie}<br>
-      Durée : ${tache.duree}<br>
-      Date : ${tache.date || "non définie"}<br>
-      <button onclick="supprimerTache(${index})">Supprimer</button>
+    <div id="info">
+      <h3>${tache.nom}</h3>
+      <strong>Catégorie : </strong> ${tache.categorie}<br>
+      <strong>Durée :</strong> ${tache.duree}<br>
+      <strong>Date :</strong> ${tache.date ? new Date(tache.date).toLocaleDateString('fr-FR') : "non définie"}<br>
+      </div>
+      <div id='sup'>
+      <button class='btn' onclick="faitTache(${index})">Fait</button>
+      <button class='btn' onclick="supprimerTache(${index})">Supprimer</button>
+      
+      </div>
     `;
 
     container.appendChild(div);
@@ -56,7 +69,8 @@ function creer_tache() {
     nom: inputTache.value,
     categorie: selectCategorie.value,
     duree: durees[rangeDuree.value],
-    date: inputDate.value
+    date: inputDate.value,
+
   };
 
   const taches = getTaches();
@@ -75,6 +89,17 @@ function supprimerTache(index) {
   afficherTaches();
 }
 
+let tacheFini=0;
+
+function faitTache(index) {
+  const taches = getTaches();
+  taches.splice(index, 1);
+  saveTaches(taches);
+  afficherTaches();
+  
+  tacheFini++;
+  console.log(tacheFini)
+}
 // ====== INIT ======
 document.addEventListener("DOMContentLoaded", afficherTaches);
 

@@ -4,17 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accueil</title>
-    <link rel="stylesheet" href="style.css">
     
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>MyTracker</h1>
     <div id="nouvelle_tache">
-        <input type="text" id="nouvelle_tache" placeholder="Nouvelle tâche">
+        <input type="text" id="new_tache" placeholder="Nouvelle tâche">
         <select id="categories">
-            <option value="etudes">🎓 Etudes</option>
+            <option value="études">🎓 Etudes</option>
             <option value="perso">Perso</option>
-            <option value="urgent">Urgent</option>
             <option value="loisirs">Loisirs</option>
         </select>
         <div class="slider-container">
@@ -26,7 +25,7 @@
                 <span>Long</span>
             </div>
         </div>
-        <input type="datetime-local" name="" id=""> 
+        <input type="date" name="" id=""> 
         <button type="button" onclick="creer_tache()">Créer</button>
      </div>
 

@@ -25,9 +25,20 @@ function saveTaches(taches) {
   localStorage.setItem("taches", JSON.stringify(taches));
 }
 
+function getTachesFaites() {
+  return localStorage.getItem("tachesFaites");
+}
+
+function saveTachesFaites(tacheFini) {
+  localStorage.setItem("tachesFaites", tacheFini);
+}
+
+
 // ====== AFFICHAGE ======
 function afficherTaches() {
   container.innerHTML = "<h2>Mes tâches</h2>";
+  const tachesFini = getTachesFaites()
+  container.innerHTML = `${tachesFini}`;
   const taches = getTaches();
   const tachesTriees = taches.slice().sort((a, b) => {
     // Tâches sans date à la fin
@@ -89,16 +100,18 @@ function supprimerTache(index) {
   afficherTaches();
 }
 
-let tacheFini=0;
+
 
 function faitTache(index) {
   const taches = getTaches();
   taches.splice(index, 1);
   saveTaches(taches);
-  afficherTaches();
   
-  tacheFini++;
-  console.log(tacheFini)
+  tachesFini = getTachesFaites()
+  tachesFini++;
+  saveTachesFaites(tachesFini);
+  afficherTaches();
+  console.log(tachesFini)
 }
 // ====== INIT ======
 document.addEventListener("DOMContentLoaded", afficherTaches);

@@ -6,8 +6,8 @@ const rangeDuree = document.getElementById("dureeRange");
 const inputDate = document.querySelector('input[type="date"]');
 
 // conteneur d'affichage
-const container = document.createElement("div");
-document.body.appendChild(container);
+const container = document.getElementById("container");
+
 
 // mapping durée
 const durees = {
@@ -49,8 +49,9 @@ function afficherTaches() {
   });
   tachesTriees.forEach((tache, index) => {
     const div = document.createElement("div");
+    
     div.style.border = "1px solid #000000";
-    div.style.margin = "5px";
+    div.style.margin = "10px";
     div.style.padding = "5px";
     div.style.borderRadius = " 10px"
     div.className = "tache-card";

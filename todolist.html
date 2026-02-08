@@ -8,8 +8,10 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header>
     <h1>MyTracker</h1>
-    <a href="index.html">Accueil</a>
+    </header>
+    <h2>Mes tâches</h2>
     <div id="nouvelle_tache">
         <input type="text" id="new_tache" placeholder="Nouvelle tâche">
         <select id="categories">
@@ -28,13 +30,21 @@
         </div>
         <input type="date" name="" id=""> 
         <button type="button" onclick="creer_tache()">Créer</button>
+        
+        
      </div>
+     <div id="container"></div>
 
 
+     
 
-
-</div>
-
+        <footer>
+            <div id="foot">
+            <a href="index.html">Accueil</a>
+            <a href="todolist.html">Liste</a>
+            <a href="timer_complet.html">Timer</a>
+            </div>
+        </footer>
 
 <script src="script.js"></script>
 </body>

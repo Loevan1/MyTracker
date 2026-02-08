@@ -1,0 +1,18 @@
+<h1>Le site utile a ta vie</h1>
+    <h3>En cours de conception</h3>
+    <h2>Idees</h2>
+    <h3>Bienvenue Loevan !</h3>
+    <h3>Citation : Aujourd’hui tu as 86 400 secondes. Que vas-tu en faire ? </h3>
+    <h3>Score de vie : 78 / 100</h3>
+    <h3>XP de vie : 7515 XP </h3>
+    <h3>Streak : 12 jours</h3>
+    <br>
+    <br>
+    <h3>Habitudes</h3>
+    <h3>Sommeil</h3>
+    <h3>Argent</h3>
+    <br>
+    <br>
+    <h3>connecter api calendar</h3>
+    <h3>notifications</h3>
+    <h3>web app</h3>

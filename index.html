@@ -6,10 +6,112 @@
     <title>My Tracker</title>
 </head>
 <body>
+    <header>
+    <h1><a href="index.html"></a>MyTracker</h1>
+    </header>
+    <h2>Le site utile a ta vie</h2>
     
-    <h1>Le site utile a ta vie</h1>
-    <a href="todolist.html">To-do list</a>
-    <a href="timer_complet.html">Timer</a>
-    <a href="stats.html">Statistiques</a>
+    <div id="stats">
+    <h4>Indice de vie : <br> 78 / 100</h4>
+    <h4>Experience : <br> 7515 XP </h4>
+    <h4>Streak : <br> 12 jours</h4>
+    </div>
+    <h3>Citation du jour</h3>
+    <p>Aujourd’hui tu as 86 400 secondes. <br>Que vas-tu en faire ? </p>
+    <div id="temps">
+        <h4>Année écoulée : <br> 62 %</h4>
+        <h4>Jour de la semaine : <br> Samedi</h4>
+    </div>
+
+
+    <footer>
+            <div id="foot">
+            <a href="index.html">Accueil</a>
+            <a href="todolist.html">Tâches</a>
+            <a href="timer_complet.html">Timer</a>
+            <a href="stats.html">Stats</a>
+            </div>
+        </footer>
+    
+
+        <style>
+    *{
+    font-family : system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin: 0px;
+}
+
+    body {
+  padding-bottom: 60px; 
+}
+
+h2,h3{
+    margin: 15px;
+}
+
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+
+a:visited {
+  color:#007bff
+}
+
+
+a:active {
+  color: red;
+}
+
+header{
+  background-color: aliceblue;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-bottom: #000000 1px solid;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding-top: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  color: white;
+  
+  box-sizing: border-box;
+}
+
+#foot{
+  padding: 12px;
+  margin-left: 30px;
+  margin-right: 30px;
+  border: #000000 1px solid;
+  border-radius: 10px;
+  background-color: aliceblue;
+  display: flex;
+  justify-content: space-between;
+  
+}
+
+#stats,#temps{
+    display: flex;
+    justify-content: space-between;
+    border: #000000 1px solid;
+    border-radius: 10px;
+    margin: 10px;
+    padding: 15px;
+}
+
+p{
+    display: flex;
+    justify-content: center;
+}
+</style>
 </body>
 </html>

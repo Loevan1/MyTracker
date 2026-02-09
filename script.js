@@ -121,13 +121,13 @@ function faitTache(index) {
   const taches = getTaches();
   taches.splice(index, 1);
   saveTaches(taches);
-  
-  tachesFini = getTachesFaites()
-  tachesFini++;
-  saveTachesFaites(tachesFini);
   XP = getXP()
   XP+=5;
   saveXP(XP);
+  tachesFini = getTachesFaites()
+  tachesFini++;
+  saveTachesFaites(tachesFini);
+  
   afficherTaches();
   
 }

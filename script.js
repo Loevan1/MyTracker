@@ -33,11 +33,6 @@ function saveTachesFaites(tacheFini) {
   localStorage.setItem("tachesFaites", tacheFini);
 }
 
-function getTachesFaites() {
-  return JSON.parse(localStorage.getItem("tachesFaites")) || [];
-}
-
-
   function saveXP(XP) {
   localStorage.setItem("XP", XP);
 }

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Tracker</title>
-    <link rel="icon" sizes="192x192" href="icone2.png">
-<link rel="shortcut icon" href="icone2.png">
+    <link rel="icon" sizes="192x192" href="icone.png">
+<link rel="shortcut icon" href="icone.png">
 
 </head>
 <body>
@@ -13,7 +13,7 @@
     <h1><a href="index.html"></a>MyTracker</h1>
     </header>
     <h2>Le site utile a ta vie</h2>
-    
+    <div id="afficheur">
     <div id="stats">
     <h4>Indice de vie : <br> 78 / 100</h4>
     <h4>Experience : <br> 7515 XP </h4>
@@ -24,7 +24,7 @@
         <h4>Année écoulée : <br> 62 %</h4>
         <h4>Jour de la semaine : <br> Samedi</h4>
     </div>
-
+    </div>
 
     <footer>
             <div id="foot">
@@ -37,18 +37,25 @@
     
 
 <script>
-  const container = document.getElementById("temps");
+  const temps = document.getElementById("temps");
   const maintenant = new Date();
   const debutAnnee = new Date(maintenant.getFullYear(), 0, 1);
   const finAnnee = new Date(maintenant.getFullYear() + 1, 0, 1);
-  
   const tempsEcoule = maintenant - debutAnnee;
   const dureeTotale = finAnnee - debutAnnee;
-  
   const pourcentage = ((tempsEcoule / dureeTotale) * 100).toFixed(2) + '%';
-  container.innerHTML =`<h4>Aujourd'hui : ${maintenant.toLocaleDateString('fr-FR')}</h4>
-  <h4>Année écoulée : ${pourcentage}</h4>`;
+  temps.innerHTML =`<h4>Aujourd'hui : <br> ${maintenant.toLocaleDateString('fr-FR')}</h4>
+  <h4>Année écoulée : <br>${pourcentage}</h4>
+  `;
   
+  function getXP() {
+  return JSON.parse(localStorage.getItem("XP")) || [];
+}
+const stats = document.getElementById("stats");
+stats.innerHTML =`<h4>Indice de vie : <br> 78 / 100</h4>
+    <h4>Experience : <br> ${getXP()} XP </h4>
+    <h4>Streak : <br> 12 jours</h4>
+  `;
 </script>
 
 
@@ -117,18 +124,27 @@ footer {
   
 }
 
-#stats,#temps{
+#stats{
     display: flex;
     justify-content: space-between;
-    border: #000000 1px solid;
-    border-radius: 10px;
-    margin: 10px;
+    border-bottom: #000000 1px solid;
     padding: 15px;
 }
-
+#temps{
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+}
 p{
     display: flex;
     justify-content: center;
+}
+
+#afficheur{
+  display: block;
+  border: #000000 1px solid;
+  border-radius: 10px;
+  margin: 10px;
 }
 </style>
 </body>

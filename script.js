@@ -33,6 +33,18 @@ function saveTachesFaites(tacheFini) {
   localStorage.setItem("tachesFaites", tacheFini);
 }
 
+function getTachesFaites() {
+  return JSON.parse(localStorage.getItem("tachesFaites")) || [];
+}
+
+
+  function saveXP(XP) {
+  localStorage.setItem("XP", XP);
+}
+
+function getXP() {
+  return JSON.parse(localStorage.getItem("XP")) || [];
+}
 
 // ====== AFFICHAGE ======
 function afficherTaches() {
@@ -113,6 +125,9 @@ function faitTache(index) {
   tachesFini = getTachesFaites()
   tachesFini++;
   saveTachesFaites(tachesFini);
+  XP = getXP()
+  XP+=5;
+  saveXP(XP);
   afficherTaches();
   
 }

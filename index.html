@@ -19,8 +19,7 @@
     <h4>Experience : <br> 7515 XP </h4>
     <h4>Streak : <br> 12 jours</h4>
     </div>
-    <h3>Citation du jour</h3>
-    <p>Aujourd’hui tu as 86 400 secondes. <br>Que vas-tu en faire ? </p>
+    
     <div id="temps">
         <h4>Année écoulée : <br> 62 %</h4>
         <h4>Jour de la semaine : <br> Samedi</h4>
@@ -36,6 +35,22 @@
             </div>
         </footer>
     
+
+<script>
+  const container = document.getElementById("temps");
+  const maintenant = new Date();
+  const debutAnnee = new Date(maintenant.getFullYear(), 0, 1);
+  const finAnnee = new Date(maintenant.getFullYear() + 1, 0, 1);
+  
+  const tempsEcoule = maintenant - debutAnnee;
+  const dureeTotale = finAnnee - debutAnnee;
+  
+  const pourcentage = ((tempsEcoule / dureeTotale) * 100).toFixed(2) + '%';
+  container.innerHTML =`<h4>Aujourd'hui : ${maintenant.toLocaleDateString('fr-FR')}</h4>
+  <h4>Année écoulée : ${pourcentage}</h4>`;
+  
+</script>
+
 
         <style>
     *{

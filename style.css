@@ -5,9 +5,10 @@
     margin: 0px;
 }
 
-h2{
+h2,h4{
   display: flex;
   justify-content: center;
+  margin: 10px;
 }
 .slider-container {
     width: 300px;

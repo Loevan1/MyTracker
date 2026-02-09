@@ -9,6 +9,8 @@ const inputDate = document.querySelector('input[type="date"]');
 const container = document.getElementById("container");
 
 
+
+
 // mapping durée
 const durees = {
   1: "court",
@@ -34,7 +36,11 @@ function saveTachesFaites(tacheFini) {
 
 // ====== AFFICHAGE ======
 function afficherTaches() {
-  container.innerHTML = "<h2>Mes tâches</h2>";
+ const maintenant = new Date();
+  container.innerHTML = `
+  <h4>Aujourd'hui : ${maintenant.toLocaleDateString('fr-FR')}</h4>
+  <h2>Mes tâches</h2>
+  `;
   const taches = getTaches();
   const tachesTriees = taches.slice().sort((a, b) => {
     // Tâches sans date à la fin
@@ -108,7 +114,7 @@ function faitTache(index) {
   tachesFini++;
   saveTachesFaites(tachesFini);
   afficherTaches();
-  console.log(tachesFini)
+  
 }
 // ====== INIT ======
 document.addEventListener("DOMContentLoaded", afficherTaches);

@@ -5,7 +5,7 @@
     margin: 0px;
 }
 
-h2,h4{
+h2{
   display: flex;
   justify-content: center;
   margin: 10px;
@@ -52,6 +52,7 @@ h3{
   gap: 5px;
   flex-direction: column;
   margin-right: 10px;
+  color: rgb(232, 67, 6);
 }
 .tache-card{
   border: 1px solid #000000;
@@ -118,4 +119,60 @@ footer {
   display: flex;
   justify-content: space-between;
   
+}
+
+.custom-checkbox {
+  display: inline-block;
+  position: relative;
+}
+
+.custom-checkbox input[type="checkbox"] {
+  opacity: 0;
+  position: absolute;
+}
+
+.checkbox-text {
+  display: inline-block;
+  padding: 2px 5px;
+  border: 1px solid #000000;
+  font-size: 0.8em;
+  border-radius: 2px;
+  cursor: pointer;
+  background: #e0e0e0;
+  margin-left: 10px;
+  background: #fee2e292;
+  color: #b91c1cc7;
+  border-color: #ef444473;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + .checkbox-text {
+  padding: 2px 4px;
+  margin-left: 0px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #ef4444;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + .checkbox-text::before {
+  content: "✓ ";
+}
+
+#creer{
+  margin-left: 40px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 4px;
+}
+#categories{
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+#triAffichage{
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }

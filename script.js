@@ -8,7 +8,7 @@ const inputDate = document.querySelector('input[type="date"]');
 // conteneur d'affichage
 const container = document.getElementById("container");
 
-
+const checkbox = document.getElementById('important');
 
 
 // mapping durée
@@ -27,7 +27,9 @@ function saveTaches(taches) {
   localStorage.setItem("taches", JSON.stringify(taches));
 }
 
-
+function getTachesFaites() {
+  return localStorage.getItem("tachesFaites");
+}
 
 function saveTachesFaites(tacheFini) {
   localStorage.setItem("tachesFaites", tacheFini);
@@ -43,19 +45,53 @@ function getXP() {
 
 // ====== AFFICHAGE ======
 function afficherTaches() {
+  const selectTri = document.getElementById('triSelect');
+  const critere = selectTri ? selectTri.value : 'date';
  const maintenant = new Date();
-  container.innerHTML = `
+  container.innerHTML = `<div id=triAffichage>
   <h4>Aujourd'hui : ${maintenant.toLocaleDateString('fr-FR')}</h4>
+  <select id="triSelect">
+      <option value="date" ${critere === 'date' ? 'selected' : ''}>Trier par date</option>
+      <option value="important" ${critere === 'important' ? 'selected' : ''}>Trier par importance</option>
+      <option value="categorie" ${critere === 'categorie' ? 'selected' : ''}>Trier par catégorie</option>
+    </select>
+    </div>
   <h2>Mes tâches</h2>
   `;
   const taches = getTaches();
+  
   const tachesTriees = taches.slice().sort((a, b) => {
-    // Tâches sans date à la fin
-    if (!a.date) return 1;
-    if (!b.date) return -1;
-    // Comparer les dates
-    return new Date(a.date) - new Date(b.date);
-  });
+  switch(critere) {
+    case 'date':
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+      return new Date(a.date) - new Date(b.date);
+    
+    case 'important':
+      // Important d'abord, puis par date
+      if (a.important && !b.important) return -1;
+      if (!a.important && b.important) return 1;
+      // Si même importance, trier par date
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+      return new Date(a.date) - new Date(b.date);
+    
+    case 'categorie':
+      if (!a.categorie) return 1;
+      if (!b.categorie) return -1;
+      const compCategorie = a.categorie.localeCompare(b.categorie);
+      // Si même catégorie, trier par date
+      if (compCategorie === 0) {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return new Date(a.date) - new Date(b.date);
+      }
+      return compCategorie;
+    
+    default:
+      return 0;
+  }
+});
   tachesTriees.forEach((tache, index) => {
     const div = document.createElement("div");
     
@@ -72,6 +108,7 @@ function afficherTaches() {
       <strong>Date :</strong> ${tache.date ? new Date(tache.date).toLocaleDateString('fr-FR') : "non définie"}<br>
       </div>
       <div id='sup'>
+      ${tache.important ? '<strong>Important</strong>' : ''}
       <button class='btn' onclick="faitTache(${index})">Fait</button>
       <button class='btn' onclick="supprimerTache(${index})">Supprimer</button>
       
@@ -80,6 +117,7 @@ function afficherTaches() {
 
     container.appendChild(div);
   });
+  document.getElementById('triSelect').addEventListener('change', afficherTaches);
 }
 
 // ====== CRÉATION DE TÂCHE ======
@@ -91,7 +129,7 @@ function creer_tache() {
     categorie: selectCategorie.value,
     duree: durees[rangeDuree.value],
     date: inputDate.value,
-
+    important: checkbox.checked,
   };
 
   const taches = getTaches();
@@ -126,6 +164,7 @@ function faitTache(index) {
   afficherTaches();
   
 }
+
 // ====== INIT ======
 document.addEventListener("DOMContentLoaded", afficherTaches);
 

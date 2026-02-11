@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accueil</title>
+    <title>Mes tâches</title>
     
 <link rel="stylesheet" href="style.css">
 </head>
@@ -19,6 +19,10 @@
             <option value="perso">👨 Perso</option>
             <option value="loisirs">🎯 Loisirs</option>
         </select>
+        <label class="custom-checkbox">
+  <input id="important" type="checkbox">
+  <span class="checkbox-text">Important</span>
+</label>
         <div class="slider-container">
             <label for="dureeRange">Durée :</label>
             <input type="range" id="dureeRange" min="1" max="3" step="1" value="2">
@@ -29,7 +33,7 @@
             </div>
         </div>
         <input type="date" name="" id=""> 
-        <button type="button" onclick="creer_tache()">Créer</button>
+        <button type="button" id='creer' onclick="creer_tache()">Créer</button>
         
         
      </div>

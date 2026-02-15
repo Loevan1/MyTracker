@@ -50,7 +50,7 @@ function afficherTaches() {
  const maintenant = new Date();
   container.innerHTML = `<div id=triAffichage>
   <h4>Aujourd'hui : ${maintenant.toLocaleDateString('fr-FR')}</h4>
-  <select id="triSelect">
+  <select id="triSelect" class="input">
       <option value="date" ${critere === 'date' ? 'selected' : ''}>Trier par date</option>
       <option value="important" ${critere === 'important' ? 'selected' : ''}>Trier par importance</option>
       <option value="categorie" ${critere === 'categorie' ? 'selected' : ''}>Trier par catégorie</option>
@@ -92,7 +92,7 @@ function afficherTaches() {
       return 0;
   }
 });
-  tachesTriees.forEach((tache, index) => {
+  tachesTriees.forEach((tache) => {
     const div = document.createElement("div");
     
     div.style.border = "1px solid #000000";
@@ -109,8 +109,8 @@ function afficherTaches() {
       </div>
       <div id='sup'>
       ${tache.important ? '<strong>Important</strong>' : ''}
-      <button class='btn' onclick="faitTache(${index})">Fait</button>
-      <button class='btn' onclick="supprimerTache(${index})">Supprimer</button>
+      <button class='btn' onclick="faitTache(${tache.id})">Fait</button>
+      <button class='btn' onclick="supprimerTache(${tache.id})">Supprimer</button>
       
       </div>
     `;
@@ -125,6 +125,7 @@ function creer_tache() {
   if (inputTache.value.trim() === "") return;
 
   const nouvelleTache = {
+    id: Date.now(), 
     nom: inputTache.value,
     categorie: selectCategorie.value,
     duree: durees[rangeDuree.value],
@@ -141,28 +142,33 @@ function creer_tache() {
 }
 
 // ====== SUPPRESSION ======
-function supprimerTache(index) {
+function supprimerTache(id) {
   const taches = getTaches();
-  taches.splice(index, 1);
-  saveTaches(taches);
-  afficherTaches();
+  const index = taches.findIndex(tache => tache.id === id);
+  if (index !== -1) {
+    taches.splice(index, 1);
+    saveTaches(taches);
+    afficherTaches();
+  }
 }
 
 
 
-function faitTache(index) {
+function faitTache(id) {
   const taches = getTaches();
-  taches.splice(index, 1);
-  saveTaches(taches);
-  XP = getXP()
-  XP+=5;
-  saveXP(XP);
-  tachesFini = getTachesFaites()
-  tachesFini++;
-  saveTachesFaites(tachesFini);
-  
-  afficherTaches();
-  
+  const index = taches.findIndex(tache => tache.id === id);
+  if (index !== -1) {
+    taches.splice(index, 1);
+    saveTaches(taches);
+    XP = getXP()
+    XP+=5;
+    saveXP(XP);
+    tachesFini = getTachesFaites()
+    tachesFini++;
+    saveTachesFaites(tachesFini);
+    
+    afficherTaches();
+  }
 }
 
 // ====== INIT ======

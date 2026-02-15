@@ -48,15 +48,16 @@ function afficherTaches() {
   const selectTri = document.getElementById('triSelect');
   const critere = selectTri ? selectTri.value : 'date';
  const maintenant = new Date();
-  container.innerHTML = `<div id=triAffichage>
-  <h4>Aujourd'hui : ${maintenant.toLocaleDateString('fr-FR')}</h4>
+  container.innerHTML = `<h2>Mes tâches</h2>
+  <div id=triAffichage>
+  <h4>Date : ${maintenant.toLocaleDateString('fr-FR')}</h4>
   <select id="triSelect" class="input">
       <option value="date" ${critere === 'date' ? 'selected' : ''}>Trier par date</option>
       <option value="important" ${critere === 'important' ? 'selected' : ''}>Trier par importance</option>
       <option value="categorie" ${critere === 'categorie' ? 'selected' : ''}>Trier par catégorie</option>
     </select>
     </div>
-  <h2>Mes tâches</h2>
+  
   `;
   const taches = getTaches();
   

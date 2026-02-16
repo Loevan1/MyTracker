@@ -1,5 +1,5 @@
 
-// ====== RÉCUPÉRATION DES ÉLÉMENTS ======
+// RÉCUPÉRATION DES ÉLÉMENTS 
 const inputTache = document.querySelector('input[type="text"]');
 const selectCategorie = document.getElementById("categories");
 const rangeDuree = document.getElementById("dureeRange");
@@ -18,7 +18,7 @@ const durees = {
   3: "long"
 };
 
-// ====== LOCALSTORAGE ======
+// enrgistrement LOCALSTORAGE 
 function getTaches() {
   return JSON.parse(localStorage.getItem("taches")) || [];
 }
@@ -43,7 +43,7 @@ function getXP() {
   return JSON.parse(localStorage.getItem("XP")) || [];
 }
 
-// ====== AFFICHAGE ======
+// affichage des taches
 function afficherTaches() {
   const selectTri = document.getElementById('triSelect');
   const critere = selectTri ? selectTri.value : 'date';
@@ -121,7 +121,7 @@ function afficherTaches() {
   document.getElementById('triSelect').addEventListener('change', afficherTaches);
 }
 
-// ====== CRÉATION DE TÂCHE ======
+// CRÉATION DE TÂCHE 
 function creer_tache() {
   if (inputTache.value.trim() === "") return;
 
@@ -142,7 +142,7 @@ function creer_tache() {
   afficherTaches();
 }
 
-// ====== SUPPRESSION ======
+// SUPPRESSION 
 function supprimerTache(id) {
   const taches = getTaches();
   const index = taches.findIndex(tache => tache.id === id);
@@ -154,7 +154,7 @@ function supprimerTache(id) {
 }
 
 
-
+// fait et suppression
 function faitTache(id) {
   const taches = getTaches();
   const index = taches.findIndex(tache => tache.id === id);
@@ -172,7 +172,7 @@ function faitTache(id) {
   }
 }
 
-// ====== INIT ======
+// intitialistaion 
 document.addEventListener("DOMContentLoaded", afficherTaches);
 
 

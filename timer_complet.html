@@ -5,88 +5,156 @@
 <title>Révélation des départements</title>
 
 <style>
-body {
-  background:#111;
-  color:white;
-  font-family:sans-serif;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:12px;
-  padding:20px;
-  font-size: 50px;
-  height: 95svh;
+  
+*{
+ 
+    font-family:'Poppins', sans-serif; 
+    
+    margin: 0px;
+    
 }
-a{
-  text-decoration: none;
-  color: black;
+body {
+  background:#F1F5F9;
+  
+
+  color: #1E293B;
+  padding-bottom: 60px;
+}
+#temps{
+  justify-self: center;
+  
+}
+#timerDuration{
+  width: 30px;
+  background-color: #E2E8F0;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 2px 5px;
+  text-align: center;
 }
 
-button, input{
-  border-radius: 30px;
+#start{
+  margin-left: 30px;
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 6px;
+  font-weight: 500;
 }
-canvas {
-  background:#111;
-  width: 900px;
-  
+#timer{
+  justify-self: center;
+  margin-bottom: 10px;
+}
+#progress{
+  justify-self: center;
+  margin-top: 10px;
   margin-bottom: 10px;
 }
 
-.controls {
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  justify-content:center;
+canvas {
+  background:#0f172a;
+  display: block;
+  justify-self: center;
+  border: 1px#0000 solid;
+  border-radius: 10px;
+  margin-bottom: 20px;
 }
 
-button {
-  padding:8px 16px;
-  margin: 40px;
-  font-size: 40px;
-}
-#timerDuration{
-  padding: 2px; 
-  width: 150px; 
-  font-size: 35px;
-  text-align: center;
-}
-#timer { font-size:60px;
-font-weight: bold;
-margin: 40px; }
 
-.stats { display:flex; gap:20px; font-size: 40px; }
 
-#temps{
+
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding-top: 10px;
+  color: white;
+  
+  box-sizing: border-box;
+}
+
+
+
+#foot{
+  padding: 12px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: rgb(190, 218, 241) 3px solid;
+  border-radius: 10px;
+  background-color: #FFFFFF;
   display: flex;
-  gap: 20px;
-  font-size: 40px;
-  align-items: center;
+  justify-content: space-between;
+  
+}
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+
+a:visited {
+  color:#007bff
+}
+
+
+a:active {
+  color: red;
+}
+
+header{
+  background-color: rgb(240, 248, 255);
+  padding: 15px;
+  margin-bottom: 20px;
+  border-bottom: 5px solid #f8f8f9;
+  
 }
 </style>
 </head>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<body>
-
+  <header>
+<h1>MyTracker</h1>
+  </header>
+  <body>
 <div id="temps">
 <label>Timer : </label>
   <input id="timerDuration" type="number" value="30" >
   <span>min</span>
-</div>
-<div class="controls">
-  
-  <button><a href="index.html">Accueil</a></button>
   <button id="start">Démarrer</button>
-  <button id="reset">Reset total</button>
-  
 </div>
+
+  
+  
+
 
 <div class="stats">
   
   <div id="progress">Progression : 0%</div>
   
+<h2 id="timer">Temps : 0s </h2>
 </div>
-<div id="timer">Temps : 0s</div>
 <canvas id="canvas"></canvas>
+<footer>
+    <div id="foot">
+    <a href="index.html">Accueil</a>
+    <a href="todolist.html">Tâches</a>
+    <a href="timer_complet.html">Timer</a>
+    <a href="stats.html">Stats</a>
+    </div>
+</footer>
+
+
+
 
 <script>
 /* ===================== DONNÉES ===================== */
@@ -124,7 +192,7 @@ const timerDiv = document.getElementById("timer");
 const progressDiv = document.getElementById("progress");
 
 const startBtn = document.getElementById("start");
-const resetBtn = document.getElementById("reset");
+
 const timerInput = document.getElementById("timerDuration");
 
 const animInput = 3600;
@@ -348,16 +416,6 @@ startBtn.onclick = () => {
   state.intervalId = setInterval(loop, 16);
 };
 
-resetBtn.onclick = () => {
-  if (!confirm("Tout supprimer ?")) return;
-  if (state.running) {
-    clearInterval(state.intervalId);
-    state.running = false;
-  }
-  localStorage.clear();
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  loadDepartment();
-};
 
 setInterval(() => {
   if (state.running) {

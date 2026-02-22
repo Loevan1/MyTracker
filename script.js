@@ -101,6 +101,9 @@ function afficherTaches() {
     div.style.padding = "5px";
     div.style.borderRadius = " 10px"
     div.className = "tache-card";
+
+
+
     div.innerHTML = `
     <div id="info">
       <h3>${tache.nom}</h3>
@@ -110,7 +113,9 @@ function afficherTaches() {
       </div>
       <div id='sup'>
       ${tache.important ? '<strong>Important</strong>' : ''}
-      <button class='btn' onclick="faitTache(${tache.id})">Fait</button>
+      ${tache.fait
+        ? '<span style="color: #28a745; font-weight: bold;">✔ Fait</span>'
+        : `<button class='btn' onclick="faitTache(${tache.id})">Fait</button>`}
       <button class='btn' onclick="supprimerTache(${tache.id})">Supprimer</button>
       
       </div>
@@ -132,6 +137,7 @@ function creer_tache() {
     duree: durees[rangeDuree.value],
     date: inputDate.value,
     important: checkbox.checked,
+    fait: false,
   };
 
   const taches = getTaches();
@@ -159,7 +165,7 @@ function faitTache(id) {
   const taches = getTaches();
   const index = taches.findIndex(tache => tache.id === id);
   if (index !== -1) {
-    taches.splice(index, 1);
+    taches[index].fait = true;
     saveTaches(taches);
     XP = getXP()
     XP+=5;

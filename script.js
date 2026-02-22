@@ -114,7 +114,7 @@ function afficherTaches() {
       <div id='sup'>
       ${tache.important ? '<strong>Important</strong>' : ''}
       ${tache.fait
-        ? '<span style="color: #28a745; font-weight: bold;">✔ Fait</span>'
+        ? '<span style="color: #28a745; font-weight: bold;">✓ Fait</span>'
         : `<button class='btn' onclick="faitTache(${tache.id})">Fait</button>`}
       <button class='btn' onclick="supprimerTache(${tache.id})">Supprimer</button>
       

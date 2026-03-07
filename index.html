@@ -6,7 +6,11 @@
     <title>My Tracker</title>
     <link rel="icon" sizes="192x192" href="icone.png">
 <link rel="shortcut icon" href="icone.png">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="manifest" href="/Site---MyTracker/manifest.json">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MyTracker"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
 </head>
 <body>
@@ -38,6 +42,9 @@
     
 
 <script>
+
+
+
   const temps = document.getElementById("temps");
   const maintenant = new Date();
   const debutAnnee = new Date(maintenant.getFullYear(), 0, 1);
@@ -57,6 +64,10 @@ stats.innerHTML =`<h4>Indice de vie : <br> 78 / 100</h4>
     <h4>Experience : <br> ${getXP()} XP </h4>
     <h4>Streak : <br> 12 jours</h4>
   `;
+
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/Site---MyTracker/service-worker.js");
+  }
 </script>
 
 

@@ -7,13 +7,404 @@
     <link rel="icon" sizes="192x192" href="icone.png">
 <link rel="shortcut icon" href="icone.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
+
+    
+
+
+
+
+
+<style>
+ *{
+ 
+    font-family:'Poppins', sans-serif; 
+    
+    margin: 0px;
+    
+}
+
+body{
+  background-color:#F1F5F9;
+  color: #1E293B;
+  padding-bottom: 60px;
+}
+  .add-form {
+    display: flex;
+    justify-content: space-between;
+  justify-self:center;
+  margin: 10px;
+  border: none;
+  border-radius: 12px;
+  padding: 10px;
+  background-color: #FFFFFF;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  width: 90%;
+  }
+
+  .add-form input {
+    background-color: #E2E8F0;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 2px 2px;
+  width: 200px;
+  }
+
+
+
+ 
+  
+  .habits-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .habit-item {
+    
+    border: 1px solid black;
+  margin: 5px;
+  padding: 5px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #FFFFFF;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  }
+
+  .habit-item:hover {
+    transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+  }
+
+ 
+
+
+
+
+ 
+
+  .week-grid {
+    display: flex;
+    gap: 0.4rem;
+    background-color:#ffffff;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px;
+  }
+
+  .day-col {
+    flex: 1;
+    text-align: center;
+    background-color: #E2E8F0;
+    border-radius: 5px;
+  }
+
+  .day-label {
+    font-size: 0.6rem;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+  }
+
+
+
+h2{
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+  
+  
+}
+
+
+.btn{
+  background-color: #E2E8F0;
+  border: none;
+  border-radius: 6px;
+  margin-top: 10px;
+  padding: 4px 10px;
+  font-weight: 500;
+}
+
+
+
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+
+a:visited {
+  color:#007bff
+}
+
+
+a:active {
+  color: red;
+}
+
+header{
+  background-color: rgb(240, 248, 255);
+  padding: 15px;
+  margin-bottom: 20px;
+  border-bottom: 5px solid #f8f8f9;
+}
+
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding-top: 10px;
+  color: white;
+  
+  box-sizing: border-box;
+}
+
+
+
+#foot{
+  padding: 12px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: rgb(190, 218, 241) 3px solid;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  display: flex;
+  justify-content: space-between;
+  
+}
+
+
+
+
+
+#creer{
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+#creer:hover{
+  background-color: #1E40AF;
+}
+
+#info{
+  margin: 5px;
+  
+}
+#sup{
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+  margin-right: 10px;
+  color: rgb(232, 67, 6);
+  
+}
+#progress-text{
+  justify-self: center;
+  font-size: large;
+  margin: 15px;
+}
+</style>
+
+
 <body>
     <header>
     <h1><a href="index.html"></a>MyTracker</h1>
     </header>
+    <div class="add-form">
+    <input type="text" id="new-habit-input" placeholder="Nouvelle habitude…" maxlength="50">
+    <button id="creer" onclick="addHabit()">Créer</button>
+  </div>
+    <h2>Mes habitudes</h2>
+  <div class="week-grid" id="week-grid"></div>
+    <div class="progress-text" id="progress-text">0 / 0 complétées</div>
+  </header>
+
+  
+
+  <div class="habits-list" id="habits-list"></div>
+
+  
+
+
+<script>
+  const TODAY = new Date().toISOString().slice(0, 10);
+  const DAYS_FR = [ 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam','Dim'];
+  const MONTHS_FR = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+  function loadData() {
+    return JSON.parse(localStorage.getItem('habitData') || '{"habits":[],"log":{}}');
+  }
+
+  function saveData(data) {
+    localStorage.setItem('habitData', JSON.stringify(data));
+  }
+
+  function getStreak(data, habitId) {
+    let streak = 0;
+    let d = new Date(TODAY);
+    while (true) {
+      const key = d.toISOString().slice(0, 10);
+      const log = data.log[key];
+      if (log && log.includes(habitId)) {
+        streak++;
+        d.setDate(d.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  function render() {
+    const data = loadData();
+
+ 
+    const now = new Date();
     
+
+    // Today's completions
+    const todayLog = data.log[TODAY] || [];
+    const total = data.habits.length;
+    const done = todayLog.length;
+   
+
+   
+    document.getElementById('progress-text').textContent = `${done} / ${total} complétée${done !== 1 ? 's' : ''}`;
+
+    // Habits list
+    const list = document.getElementById('habits-list');
+    list.innerHTML = '';
+
+    if (data.habits.length === 0) {
+      list.innerHTML = '<div class="empty-state">Aucune habitude pour l\'instant.</div>';
+    } else {
+      data.habits.forEach((h, i) => {
+        const isDone = todayLog.includes(h.id);
+        const streak = getStreak(data, h.id);
+        const item = document.createElement('div');
+        const date = new Date(parseInt(h.id));
+        item.className = 'habit-item' + (isDone ? ' done' : '');
+       
+        item.innerHTML = `
+          
+      
+      <div id='info'>
+        <h3>${h.name} </h3>
+      
+      ${date.toLocaleDateString('fr-FR')}
+      </div>
+      <h3><strong> ${streak > 0 ? `${streak} <span class="fire">🔥</span> ` : `${streak} <span class="fire">⚠️</span>   ` }</strong></h3>
+      <div id='sup'>
+
+      ${isDone
+        ? '<span style="color: #28a745; font-weight: bold;">✓ Fait</span>'
+        : `<button class='btn' onclick="faitTache(${h.id})">Fait</button>`}
+      <button class="btn" onclick="deleteHabit('${h.id}', event)" title="Supprimer">Supprimer</button>
+      
+      </div>
+        `;
+        item.addEventListener('click', () => toggleHabit(h.id));
+        list.appendChild(item);
+      });
+    }
+
+
+
+
+    // Week grid
+    renderWeek(data);
+  }
+
+  function renderWeek(data) {
+    const grid = document.getElementById('week-grid');
+    grid.innerHTML = '';
+     const now = new Date();
+  const dayOfWeek = now.getDay(); // 0=dim, 1=lun...
+  const diffToMonday = (dayOfWeek === 0) ? -6 : 1 - dayOfWeek;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const key = d.toISOString().slice(0, 10);
+    const log = data.log[key] || [];
+
+      const col = document.createElement('div');
+      col.className = 'day-col';
+      col.innerHTML = `
+        <div>${DAYS_FR[(d.getDay() + 6) % 7]}</div>
+        <div>${log.length}</div>
+      `;
+      grid.appendChild(col);
+    }
+  }
+
+  function toggleHabit(id) {
+    const data = loadData();
+    if (!data.log[TODAY]) data.log[TODAY] = [];
+    const idx = data.log[TODAY].indexOf(id);
+    if (idx === -1) {
+      data.log[TODAY].push(id);
+    } else {
+      data.log[TODAY].splice(idx, 1);
+    }
+    saveData(data);
+    render();
+  }
+
+  function addHabit() {
+    const input = document.getElementById('new-habit-input');
+    const name = input.value.trim();
+    if (!name) return;
+    const data = loadData();
+    data.habits.push({ id: Date.now().toString(), name });
+    saveData(data);
+    input.value = '';
+    render();
+  }
+
+  function deleteHabit(id, e) {
+    e.stopPropagation();
+    
+    const data = loadData();
+    data.habits = data.habits.filter(h => h.id !== id);
+    // Clean logs
+    for (const day in data.log) {
+      data.log[day] = data.log[day].filter(hid => hid !== id);
+    }
+    saveData(data);
+    render();
+  }
+
+ 
+
+  render();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
     <footer>
             <div id="foot">
             <a href="index.html">Accueil</a>

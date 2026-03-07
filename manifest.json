@@ -1,7 +1,7 @@
 {
   "name": "My Tracker",
   "short_name": "Tracker",
-  "start_url": "/Site---MyTracker/",
+  "start_url": "/Site---MyTracker/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",

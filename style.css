@@ -145,10 +145,15 @@ footer {
 }
 
 #icone{
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
 }
 
+#iconesommeil{
+   width: 30px;
+  height: 23px;
+  
+}
 #foot{
   padding: 12px;
   margin-left: 5px;

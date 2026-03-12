@@ -30,6 +30,7 @@ body{
   color: #1E293B;
   padding-bottom: 60px;
 }
+
   .add-form {
     display: flex;
     justify-content: space-between;
@@ -169,10 +170,19 @@ footer {
   box-sizing: border-box;
 }
 
+#icone{
+  width: 25px;
+  height: 25px;
+}
 
+#iconesommeil{
+   width: 30px;
+  height: 23px;
+  
+}
 
 #foot{
-  padding: 12px;
+  padding: 7px;
   margin-left: 5px;
   margin-right: 5px;
   border: rgb(190, 218, 241) 3px solid;
@@ -180,8 +190,11 @@ footer {
   background-color: #FFFFFF;
   display: flex;
   justify-content: space-between;
-  
+  align-items: center;
 }
+
+
+
 
 
 
@@ -202,20 +215,26 @@ footer {
 
 #info{
   margin: 5px;
-  
+  width: 40%;
 }
 #sup{
   display: flex;
   gap: 5px;
   flex-direction: column;
   margin-right: 10px;
+  margin-bottom: 10px;
   color: rgb(232, 67, 6);
-  
 }
 #progress-text{
   justify-self: center;
   font-size: large;
   margin: 15px;
+}
+
+#streak{
+  width: 20%;
+  margin-right: 20px;
+  text-align: right;
 }
 </style>
 
@@ -252,7 +271,13 @@ footer {
   function saveData(data) {
     localStorage.setItem('habitData', JSON.stringify(data));
   }
+  function saveXP(XP) {
+  localStorage.setItem("XP", XP);
+}
 
+function getXP() {
+  return JSON.parse(localStorage.getItem("XP")) || [];
+}
   function getStreak(data, habitId) {
     let streak = 0;
     let d = new Date(TODAY);
@@ -288,6 +313,7 @@ footer {
     // Habits list
     const list = document.getElementById('habits-list');
     list.innerHTML = '';
+    
 
     if (data.habits.length === 0) {
       list.innerHTML = '<div class="empty-state">Aucune habitude pour l\'instant.</div>';
@@ -307,17 +333,18 @@ footer {
       
       ${date.toLocaleDateString('fr-FR')}
       </div>
-      <h3><strong> ${streak > 0 ? `${streak} <span class="fire">🔥</span> ` : `${streak} <span class="fire">⚠️</span>   ` }</strong></h3>
+      <div id="streak"> <h3><strong> ${streak > 0 ? `${streak} <span class="fire">🔥</span> ` : `${streak} <span class="fire">⚠️</span>   ` }</strong></h3> </div>
       <div id='sup'>
 
       ${isDone
-        ? '<span style="color: #28a745; font-weight: bold;">✓ Fait</span>'
-        : `<button class='btn' onclick="faitTache(${h.id})">Fait</button>`}
+        ? `<span style="color:#28a745; font-weight:bold; padding:12px 0px 0px 0px;">✓ Fait</span>`
+        : `<button class='btn' onclick="toggleHabit('${h.id}')">Fait</button>`}
       <button class="btn" onclick="deleteHabit('${h.id}', event)" title="Supprimer">Supprimer</button>
       
       </div>
         `;
-        item.addEventListener('click', () => toggleHabit(h.id));
+        
+       
         list.appendChild(item);
       });
     }
@@ -360,8 +387,9 @@ footer {
     const idx = data.log[TODAY].indexOf(id);
     if (idx === -1) {
       data.log[TODAY].push(id);
-    } else {
-      data.log[TODAY].splice(idx, 1);
+      XP = getXP()
+      XP+=5;
+      saveXP(XP);
     }
     saveData(data);
     render();
@@ -418,88 +446,6 @@ footer {
         </footer>
     
 
-<script>
-  
-</script>
 
-
-        <style>
-*{
- 
-    font-family:'Poppins', sans-serif; 
-    
-    margin: 0px;
-    
-}
-
-body{
-  background-color:#F1F5F9;
-  color: #1E293B;
-  padding-bottom: 60px;
-}
-
-a {
-  text-decoration: none;
-  color: #007bff;
-}
-
-a:hover {
-  color: #0056b3;
-  text-decoration: underline;
-}
-
-
-a:visited {
-  color:#007bff
-}
-
-
-a:active {
-  color: red;
-}
-
-header{
-  background-color: rgb(240, 248, 255);
-  padding: 15px;
-  margin-bottom: 20px;
-  border-bottom: 5px solid #f8f8f9;
-}
-
-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding-top: 10px;
-  color: white;
-  
-  box-sizing: border-box;
-}
-
-#icone{
-  width: 25px;
-  height: 25px;
-}
-
-#iconesommeil{
-   width: 30px;
-  height: 23px;
-  
-}
-
-#foot{
-  padding: 7px;
-  margin-left: 5px;
-  margin-right: 5px;
-  border: rgb(190, 218, 241) 3px solid;
-  border-radius: 10px;
-  background-color: #FFFFFF;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-
-</style>
 </body>
 </html>

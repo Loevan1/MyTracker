@@ -31,7 +31,9 @@
         <h4>Jour de la semaine : <br> Samedi</h4>
     </div>
     </div>
-
+    <div id="streak-widget">
+  <button id="streak-btn">Valider ma journée</button>
+  </div>
     <footer>
             <div id="foot">
             <a href="index.html"><img src="icones/home.png" id="icone"></a>
@@ -63,11 +65,91 @@
   function getXP() {
   return JSON.parse(localStorage.getItem("XP")) || [];
 }
+function saveXP(XP) {
+  localStorage.setItem("XP", XP);
+}
+
 const stats = document.getElementById("stats");
+function refresh(){
 stats.innerHTML =`<h4>Indice de vie : <br> 78 / 100</h4>
     <h4>Experience : <br> ${getXP()} XP </h4>
-    <h4>Streak : <br> 12 jours</h4>
+    <h4 id='streak'>Streak : <br> 12 jours</h4>
   `;
+}
+refresh();
+function getTodayStr() {
+  return new Date().toISOString().slice(0, 10); // "2026-03-15"
+}
+
+function getYesterdayStr() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().slice(0, 10);
+}
+
+function loadStreak() {
+  return {
+    count: parseInt(localStorage.getItem('streak_count') || '0'),
+    lastDate: localStorage.getItem('streak_last_date') || '',
+  };
+}
+
+function checkInStreak() {
+  const today = getTodayStr();
+  const { count, lastDate } = loadStreak();
+
+  // Déjà cliqué aujourd'hui → on bloque
+  if (lastDate === today) return null;
+
+  let newCount;
+  if (lastDate === getYesterdayStr()) {
+    // Hier = dernier check-in → on continue la streak
+    newCount = count + 1;
+    XP = getXP()
+    XP+=2;
+    saveXP(XP);
+    refresh();
+  } else {
+    // Cassée ou première fois → on repart à 1
+    newCount = 1;
+    XP = getXP()
+    XP+=2;
+    saveXP(XP);
+    refresh();
+  }
+
+  localStorage.setItem('streak_count', newCount);
+  localStorage.setItem('streak_last_date', today);
+
+  return newCount;
+}
+
+function updateStreakUI(){
+  const today = getTodayStr();
+  const { count, lastDate } = loadStreak();
+  const alreadyDone = lastDate === today;
+
+  const btn = document.getElementById('streak-btn');
+  const display = document.getElementById('streak');
+
+  display.innerHTML = ` Streak :<br>  ${count} 🔥`;
+
+  if (alreadyDone) {
+    btn.textContent = '✅ Validé';
+    btn.disabled = true;
+  } else {
+    btn.textContent = 'Valider ma journée';
+    btn.disabled = false;
+  }
+}
+
+document.getElementById('streak-btn').addEventListener('click', () => {
+  const result = checkInStreak();
+  if (result !== null) updateStreakUI();
+});
+
+// Au chargement de la page
+updateStreakUI();
 
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/Site---MyTracker/service-worker.js");
@@ -177,6 +259,21 @@ p{
   padding: 10px;
   background-color: #FFFFFF;
   box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+#streak-btn{
+  display: flex;
+  justify-self: center ;
+  margin-top: 50px;
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+#streak-btn:hover{
+  background-color: #1E40AF;
 }
 </style>
 </body>

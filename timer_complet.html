@@ -256,6 +256,15 @@ function clearTimerState() {
   localStorage.removeItem("activeTimer");
 }
 
+function saveXP(XP) {
+  localStorage.setItem("XP", XP);
+}
+
+function getXP() {
+  return JSON.parse(localStorage.getItem("XP")) || [];
+}
+
+
 /* ===================== LOGIQUE ===================== */
 
 function loadDepartment() {
@@ -400,6 +409,9 @@ function loop() {
     clearInterval(state.intervalId);
     clearTimerState();
     son.play();
+    XP = getXP()
+    XP+=15;
+    saveXP(XP);
     saveDept(departments[state.deptIndex].num);
     setTimeout(completeDepartment, 1200);
     return;
@@ -411,6 +423,9 @@ function loop() {
     state.totalTime += elapsedReal;
     clearTimerState();
     son.play();
+    XP = getXP()
+    XP+=5;
+    saveXP(XP);
     saveDept(departments[state.deptIndex].num);
     return;
   }

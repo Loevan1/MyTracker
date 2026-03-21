@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sommeil</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ *{
+ 
+    font-family:'Poppins', sans-serif; 
+    
+    margin: 0px;
+    
+}
+
+body{
+  background-color:#F1F5F9;
+  color: #1E293B;
+  padding-bottom: 60px;
+}
+h2,h3{
+    margin: 15px;
+}
+
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+
+a:visited {
+  color:#007bff
+}
+
+
+a:active {
+  color: red;
+}
+
+header{
+  background-color: #f0f8ff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-bottom: 5px solid #f8f8f9;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding-top: 10px;
+  color: white;
+  
+  box-sizing: border-box;
+}
+
+#icone{
+  width: 25px;
+  height: 25px;
+}
+
+#iconesommeil{
+   width: 30px;
+  height: 23px;
+  
+}
+#foot{
+  padding: 7px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: rgb(190, 218, 241) 3px solid;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.input,.quality-select{
+  background-color: #E2E8F0;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 2px 2px;
+  width: 65px;
+}
+
+.nouvelle_nuit{
+  margin: 10px;
+  border: none;
+  border-radius: 12px;
+  padding: 10px;
+  background-color: #FFFFFF;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+
+h3{
+  font-size: large;
+  margin: 5px 0px 10px 0px;
+  color: #16A34A;
+}
+
+
+
+
+
+.tache-card{
+  border: none;
+  margin: 5px;
+  padding: 5px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #FFFFFF;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  
+}
+
+.tache-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+
+#date,#quality{
+  width: 100px;
+}
+
+.form-grid{
+  display: flex;
+  justify-content: space-between;
+}
+
+#creer{
+  margin-left: 130px;
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+#creer:hover{
+  background-color: #1E40AF;
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+    <header>
+      <h1><a href="index.html"></a>MyTracker</h1>
+    </header>
+
+  <div class="nouvelle_nuit">
+
+    <div class="form-grid">
+      <div class="field">
+        <label>📅 Date</label>
+        <input type="date" id="date" class="input" oninput="updatePreview()" />
+      </div>
+      <div class="field">
+        <label>Coucher</label>
+        <input type="time" id="start-time" class="input" oninput="updatePreview()" />
+      </div>
+      <div class="field">
+        <label>Réveil</label>
+        <input type="time" id="end-time" class="input" oninput="updatePreview()" />
+      </div>
+      </div>
+      <div id="basnouvellenuit">
+      <div class="field">
+        <label>Qualité</label>
+        <select id="quality" class="quality-select">
+          <option value="Excellente">Excellente</option>
+          <option value="Bonne" selected>Bonne</option>
+          <option value="Moyenne">Moyenne</option>
+          <option value="Mauvaise">Mauvaise</option>
+        </select>
+      </div>
+    
+      <button class="btn-add" id="creer" onclick="addEntry()"> Ajouter</button>
+    </div>
+    <div class="duration-preview" id="duration-preview"></div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card blue"><div class="stat-value" id="stat-avg">--</div><div class="stat-label">Moyenne / nuit</div></div>
+    <div class="stat-card purple"><div class="stat-value" id="stat-total">--</div><div class="stat-label">Nuits enregistrees</div></div>
+    <div class="stat-card green"><div class="stat-value" id="stat-best">--</div><div class="stat-label">Meilleure nuit</div></div>
+    <div class="stat-card red"><div class="stat-value" id="stat-worst">--</div><div class="stat-label">Pire nuit</div></div>
+  </div>
+
+  <div class="entries-section">
+    <div class="section-header">
+      <div class="section-title">Historique</div>
+    </div>
+    <div id="entries-list"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+
+<footer>
+            <div id="foot">
+            <a href="index.html"><img src="icones/home.png" id="icone"></a>
+            <a href="todolist.html"><img src="icones/tache.png" id="icone"></a>
+            <a href="habitudes.html"><img src="icones/habitudes.png" id="icone"></a>
+            <a href="index.html"><img src="icones/sommeil.png" id="iconesommeil"></a>
+            <a href="timer_complet.html"><img src="icones/timer.png" id="icone"></a>
+            <a href="stats.html"><img src="icones/stats.png" id="icone"></a>
+            
+            </div>
+        </footer>
+
+<script>
+var STORAGE_KEY = 'sleep_entries_v2';
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function initDefaults() {
+  var now = new Date();
+  // Default: date = today, start = 23:00, end = 07:00
+  document.getElementById('date').value = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
+  document.getElementById('start-time').value = '23:00';
+  document.getElementById('end-time').value = '07:00';
+  updatePreview();
+}
+
+function getStartEnd() {
+  var date = document.getElementById('date').value;
+  var st = document.getElementById('start-time').value;
+  var et = document.getElementById('end-time').value;
+  if (!date || !st || !et) return null;
+
+  var start = new Date(date + 'T' + st);
+  var end = new Date(date + 'T' + et);
+  // Si heure fin <= heure début, on considère que le réveil est le lendemain
+  if (end <= start) { end.setDate(end.getDate() + 1); }
+  return { start: start, end: end };
+}
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch(e) { return []; }
+}
+function save(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 2500);
+}
+
+function formatHours(h) {
+  var hh = Math.floor(h);
+  var mm = Math.round((h - hh) * 60);
+  return mm > 0 ? hh + 'h' + pad(mm) : hh + 'h';
+}
+
+function formatDT(str) {
+  var d = new Date(str);
+  return pad(d.getDate()) + '/' + pad(d.getMonth()+1) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
+function qualityClass(q) {
+  var map = { 'Excellente': 'q-excellent', 'Bonne': 'q-bonne', 'Moyenne': 'q-moyenne', 'Mauvaise': 'q-mauvaise' };
+  return map[q] || 'q-bonne';
+}
+
+function barClass(h) {
+  if (h >= 8) return 'good';
+  if (h >= 6) return 'ok';
+  return 'bad';
+}
+
+function updatePreview() {
+  var el = document.getElementById('duration-preview');
+  var times = getStartEnd();
+  if (!times) { el.textContent = ''; return; }
+  var diff = (times.end - times.start) / 3600000;
+  if (diff <= 0 || diff > 24) {
+    el.textContent = 'Durée invalide';
+    el.className = 'duration-preview err';
+  } else {
+    var overnight = times.end.getDate() !== times.start.getDate() ? ' (nuit suivante)' : '';
+    el.textContent = 'Durée calculée : ' + formatHours(diff) + overnight;
+    el.className = 'duration-preview';
+  }
+}
+
+function addEntry() {
+  var date = document.getElementById('date').value;
+  var quality = document.getElementById('quality').value;
+  var times = getStartEnd();
+  if (!times || !date) { toast('Remplis tous les champs'); return; }
+  var hours = (times.end - times.start) / 3600000;
+  if (hours <= 0 || hours > 24) { toast('Vérifie les heures'); return; }
+
+  var data = load();
+  // Use date+startTime as unique id
+  var id = date + 'T' + document.getElementById('start-time').value;
+  for (var i = 0; i < data.length; i++) {
+    if (data[i].id === id) { toast('Cette entrée existe déjà'); return; }
+  }
+  data.push({
+    id: id,
+    start: times.start.toISOString(),
+    end: times.end.toISOString(),
+    hours: hours,
+    quality: quality
+  });
+  data.sort(function(a, b) { return b.start.localeCompare(a.start); });
+  save(data);
+  render();
+  toast('Nuit ajoutée !');
+}
+
+function deleteEntry(id) {
+  save(load().filter(function(e) { return e.id !== id; }));
+  render();
+  toast('Entrée supprimée');
+}
+
+function clearAll() {
+  if (!confirm("Effacer tout l'historique ?")) return;
+  save([]); render();
+}
+
+function render() {
+  var data = load();
+
+  if (data.length === 0) {
+    document.getElementById('stat-avg').textContent = '--';
+    document.getElementById('stat-total').textContent = '--';
+    document.getElementById('stat-best').textContent = '--';
+    document.getElementById('stat-worst').textContent = '--';
+  } else {
+    var hours = data.map(function(e) { return e.hours; });
+    var sum = hours.reduce(function(a,b){return a+b;}, 0);
+    document.getElementById('stat-avg').textContent = formatHours(sum / hours.length);
+    document.getElementById('stat-total').textContent = data.length;
+    document.getElementById('stat-best').textContent = formatHours(Math.max.apply(null, hours));
+    document.getElementById('stat-worst').textContent = formatHours(Math.min.apply(null, hours));
+  }
+
+  var chart = document.getElementById('chart');
+  var last7 = data.slice(0, 7).reverse();
+  var maxH = 10;
+  for (var i = 0; i < last7.length; i++) { if (last7[i].hours > maxH) maxH = last7[i].hours; }
+  var goalPct = (8 / maxH) * 100;
+  chart.innerHTML = '';
+
+  if (last7.length > 0) {
+    var gl = document.createElement('div');
+    gl.className = 'goal-line';
+    gl.style.cssText = 'position:absolute;bottom:' + goalPct + '%;left:0;right:0;';
+    chart.appendChild(gl);
+  }
+
+  if (last7.length === 0) {
+    chart.innerHTML = '<div style="color:var(--muted);font-size:0.75rem;margin:auto">Aucune donnée</div>';
+  } else {
+    var days = ['dim','lun','mar','mer','jeu','ven','sam'];
+    for (var j = 0; j < last7.length; j++) {
+      var e = last7[j];
+      var pct = (e.hours / maxH) * 100;
+      var d = new Date(e.start);
+      var day = days[d.getDay()];
+      var group = document.createElement('div');
+      group.className = 'bar-group';
+      group.innerHTML = '<div class="bar ' + barClass(e.hours) + '" style="height:' + pct + '%" data-tip="' + formatHours(e.hours) + ' · ' + e.quality + '"></div><div class="bar-label">' + day + '</div>';
+      chart.appendChild(group);
+    }
+  }
+
+  var list = document.getElementById('entries-list');
+  if (data.length === 0) {
+    list.innerHTML = '<div class="empty-state"><span class="moon">🌙</span>Aucune nuit enregistrée<br>Commence par ajouter ta première nuit !</div>';
+    return;
+  }
+  var html = '';
+  for (var k = 0; k < data.length; k++) {
+    var entry = data[k];
+    var safeId = entry.id.replace(/'/g, '');
+    html += '<div class="entry-row">' +
+      '<div class="entry-times">' +
+        '<div class="entry-time">🌙 ' + formatDT(entry.start) + '</div>' +
+        '<div class="entry-time">☀️ ' + formatDT(entry.end) + '</div>' +
+      '</div>' +
+      '<div class="entry-duration">' + formatHours(entry.hours) + '</div>' +
+      '<span class="quality-badge ' + qualityClass(entry.quality) + '">' + entry.quality + '</span>' +
+      '<button class="btn-del" onclick="deleteEntry(\'' + safeId + '\')" title="Supprimer">&#x2715;</button>' +
+    '</div>';
+  }
+  list.innerHTML = html;
+}
+
+initDefaults();
+render();
+</script>
+</body>
+</html>

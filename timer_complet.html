@@ -459,9 +459,36 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
+let wakeLock = null;
+
+async function requestWakeLock() {
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    console.log('Wake lock activé');
+    
+    // Si l'onglet perd le focus, le wake lock est libéré automatiquement
+    // Il faut le réactiver quand l'utilisateur revient sur l'onglet
+    wakeLock.addEventListener('release', () => {
+      console.log('Wake lock libéré');
+    });
+  } catch (err) {
+    console.error(`Erreur : ${err.name}, ${err.message}`);
+  }
+}
+
+// Réactiver automatiquement si l'utilisateur revient sur l'onglet
+document.addEventListener('visibilitychange', async () => {
+  if (wakeLock !== null && document.visibilityState === 'visible') {
+    await requestWakeLock();
+  }
+});
+
+// Appeler au chargement de la page
+
 /* ===================== INIT ===================== */
 
 loadDepartment();
+requestWakeLock();
 </script>
 
 </body>

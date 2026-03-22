@@ -19,10 +19,14 @@ body{
   color: #1E293B;
   padding-bottom: 60px;
 }
-h2,h3{
-    margin: 15px;
-}
 
+
+h2{
+  display: flex;
+  justify-content: center;
+  margin: 15px;
+  
+}
 a {
   text-decoration: none;
   color: #007bff;
@@ -110,29 +114,7 @@ h3{
 }
 
 
-
-
-
-.tache-card{
-  border: none;
-  margin: 5px;
-  padding: 5px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #FFFFFF;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
-  
-}
-
-.tache-card:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-}
-
-
-#date,#quality{
+#quality{
   width: 100px;
 }
 
@@ -141,8 +123,15 @@ h3{
   justify-content: space-between;
 }
 
+#basnouvellenuit{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  align-items:end;
+}
+
 #creer{
-  margin-left: 130px;
+  
   background-color: #2563EB;
   color: white;
   border: none;
@@ -153,6 +142,85 @@ h3{
 
 #creer:hover{
   background-color: #1E40AF;
+}
+label{
+  margin-right: 15px;
+}
+
+#duration-preview{
+  font-size: large;
+  font-weight: bold;
+  color: #16A34A ;
+}
+.stats-grid{
+  display: flex;
+  justify-content: space-evenly;
+  }
+
+.stat-label{
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 20px;
+  }
+.stat-value{
+  border: none;
+  margin: 5px;
+  padding: 5px;
+  border-radius: 12px;
+  background-color: #FFFFFF;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  width: 80px;
+  text-align: center;
+  
+}
+
+
+.entry-row{
+  border: solid 1px black;
+  margin: 10px;
+  padding: 5px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #FFFFFF;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  
+}
+
+.entry-row:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+
+
+.info{
+  margin: 5px;
+  width: 35%;
+}
+.heuresnuit{
+  margin-right: 10px;
+  
+}
+
+
+.heurenuit{
+  width: 20%;
+  margin-right: 20px;
+  text-align: center;
+  font-size:large;
+  font-weight: bold;
+  color: #16A34A ;
+}
+.entry-datestr,.entry-dayname{
+  font-weight: bold;
+}
+#toast,.empty-state{
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  text-align: center;
 }
 
 </style>
@@ -166,22 +234,20 @@ h3{
   <div class="nouvelle_nuit">
 
     <div class="form-grid">
+      
       <div class="field">
-        <label>📅 Date</label>
-        <input type="date" id="date" class="input" oninput="updatePreview()" />
-      </div>
-      <div class="field">
-        <label>Coucher</label>
+        <label>De</label>
         <input type="time" id="start-time" class="input" oninput="updatePreview()" />
       </div>
       <div class="field">
-        <label>Réveil</label>
+        <label>à</label>
         <input type="time" id="end-time" class="input" oninput="updatePreview()" />
       </div>
-      </div>
-      <div id="basnouvellenuit">
+      
+      
+      
       <div class="field">
-        <label>Qualité</label>
+        
         <select id="quality" class="quality-select">
           <option value="Excellente">Excellente</option>
           <option value="Bonne" selected>Bonne</option>
@@ -189,27 +255,34 @@ h3{
           <option value="Mauvaise">Mauvaise</option>
         </select>
       </div>
-    
+      </div>
+    <div id="basnouvellenuit">
+      <div class="duration-preview" id="duration-preview"></div>
       <button class="btn-add" id="creer" onclick="addEntry()"> Ajouter</button>
+      
     </div>
-    <div class="duration-preview" id="duration-preview"></div>
+    
   </div>
+  <div class="toast" id="toast"></div>
+
 
   <div class="stats-grid">
-    <div class="stat-card blue"><div class="stat-value" id="stat-avg">--</div><div class="stat-label">Moyenne / nuit</div></div>
-    <div class="stat-card purple"><div class="stat-value" id="stat-total">--</div><div class="stat-label">Nuits enregistrees</div></div>
-    <div class="stat-card green"><div class="stat-value" id="stat-best">--</div><div class="stat-label">Meilleure nuit</div></div>
-    <div class="stat-card red"><div class="stat-value" id="stat-worst">--</div><div class="stat-label">Pire nuit</div></div>
+    <div class="stat-card blue"><div class="stat-value" id="stat-avg">--</div></div>
+    <div class="stat-card purple"><div class="stat-value" id="stat-total">--</div></div>
+  </div>
+  <div class="stat-label">
+    <div>Moyenne / nuit</div>
+    <div>Nuits au total</div>
   </div>
 
   <div class="entries-section">
     <div class="section-header">
-      <div class="section-title">Historique</div>
+      <div class="section-title"><h2>Historique </h2></div>
     </div>
     <div id="entries-list"></div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+
 
 
 <footer>
@@ -217,7 +290,7 @@ h3{
             <a href="index.html"><img src="icones/home.png" id="icone"></a>
             <a href="todolist.html"><img src="icones/tache.png" id="icone"></a>
             <a href="habitudes.html"><img src="icones/habitudes.png" id="icone"></a>
-            <a href="index.html"><img src="icones/sommeil.png" id="iconesommeil"></a>
+            <a href="sommeil.html"><img src="icones/sommeil.png" id="iconesommeil"></a>
             <a href="timer_complet.html"><img src="icones/timer.png" id="icone"></a>
             <a href="stats.html"><img src="icones/stats.png" id="icone"></a>
             
@@ -229,26 +302,29 @@ var STORAGE_KEY = 'sleep_entries_v2';
 
 function pad(n) { return String(n).padStart(2, '0'); }
 
-function initDefaults() {
+function getTodayStr() {
   var now = new Date();
-  // Default: date = today, start = 23:00, end = 07:00
-  document.getElementById('date').value = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
+  now.setDate(now.getDate() - 1);
+  return now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
+}
+ 
+function initDefaults() {
   document.getElementById('start-time').value = '23:00';
   document.getElementById('end-time').value = '07:00';
   updatePreview();
 }
-
+ 
 function getStartEnd() {
-  var date = document.getElementById('date').value;
+  var date = getTodayStr();
   var st = document.getElementById('start-time').value;
   var et = document.getElementById('end-time').value;
-  if (!date || !st || !et) return null;
-
+  if (!st || !et) return null;
+ 
   var start = new Date(date + 'T' + st);
   var end = new Date(date + 'T' + et);
   // Si heure fin <= heure début, on considère que le réveil est le lendemain
   if (end <= start) { end.setDate(end.getDate() + 1); }
-  return { start: start, end: end };
+  return { start: start, end: end, date: date };
 }
 
 function load() {
@@ -295,26 +371,28 @@ function updatePreview() {
     el.textContent = 'Durée invalide';
     el.className = 'duration-preview err';
   } else {
-    var overnight = times.end.getDate() !== times.start.getDate() ? ' (nuit suivante)' : '';
-    el.textContent = 'Durée calculée : ' + formatHours(diff) + overnight;
+
+    el.textContent = 'Sommeil : ' + formatHours(diff);
     el.className = 'duration-preview';
   }
 }
 
 function addEntry() {
-  var date = document.getElementById('date').value;
+  var date = getTodayStr();
   var quality = document.getElementById('quality').value;
   var times = getStartEnd();
-  if (!times || !date) { toast('Remplis tous les champs'); return; }
+  if (!times) { toast('Remplis tous les champs'); return; }
   var hours = (times.end - times.start) / 3600000;
   if (hours <= 0 || hours > 24) { toast('Vérifie les heures'); return; }
-
+ 
   var data = load();
-  // Use date+startTime as unique id
-  var id = date + 'T' + document.getElementById('start-time').value;
+  // Vérifier si une entrée existe déjà pour aujourd'hui (même date de début)
   for (var i = 0; i < data.length; i++) {
-    if (data[i].id === id) { toast('Cette entrée existe déjà'); return; }
+    var entryDate = new Date(data[i].start);
+    var entryDateStr = entryDate.getFullYear() + '-' + pad(entryDate.getMonth()+1) + '-' + pad(entryDate.getDate());
+    if (entryDateStr === date) { toast('Nuit déjà enregistrée aujourd\'hui !'); return; }
   }
+  var id = date + 'T' + document.getElementById('start-time').value;
   data.push({
     id: id,
     start: times.start.toISOString(),
@@ -328,16 +406,7 @@ function addEntry() {
   toast('Nuit ajoutée !');
 }
 
-function deleteEntry(id) {
-  save(load().filter(function(e) { return e.id !== id; }));
-  render();
-  toast('Entrée supprimée');
-}
 
-function clearAll() {
-  if (!confirm("Effacer tout l'historique ?")) return;
-  save([]); render();
-}
 
 function render() {
   var data = load();
@@ -345,64 +414,39 @@ function render() {
   if (data.length === 0) {
     document.getElementById('stat-avg').textContent = '--';
     document.getElementById('stat-total').textContent = '--';
-    document.getElementById('stat-best').textContent = '--';
-    document.getElementById('stat-worst').textContent = '--';
+    
   } else {
     var hours = data.map(function(e) { return e.hours; });
     var sum = hours.reduce(function(a,b){return a+b;}, 0);
     document.getElementById('stat-avg').textContent = formatHours(sum / hours.length);
     document.getElementById('stat-total').textContent = data.length;
-    document.getElementById('stat-best').textContent = formatHours(Math.max.apply(null, hours));
-    document.getElementById('stat-worst').textContent = formatHours(Math.min.apply(null, hours));
+    
   }
 
-  var chart = document.getElementById('chart');
-  var last7 = data.slice(0, 7).reverse();
-  var maxH = 10;
-  for (var i = 0; i < last7.length; i++) { if (last7[i].hours > maxH) maxH = last7[i].hours; }
-  var goalPct = (8 / maxH) * 100;
-  chart.innerHTML = '';
-
-  if (last7.length > 0) {
-    var gl = document.createElement('div');
-    gl.className = 'goal-line';
-    gl.style.cssText = 'position:absolute;bottom:' + goalPct + '%;left:0;right:0;';
-    chart.appendChild(gl);
-  }
-
-  if (last7.length === 0) {
-    chart.innerHTML = '<div style="color:var(--muted);font-size:0.75rem;margin:auto">Aucune donnée</div>';
-  } else {
-    var days = ['dim','lun','mar','mer','jeu','ven','sam'];
-    for (var j = 0; j < last7.length; j++) {
-      var e = last7[j];
-      var pct = (e.hours / maxH) * 100;
-      var d = new Date(e.start);
-      var day = days[d.getDay()];
-      var group = document.createElement('div');
-      group.className = 'bar-group';
-      group.innerHTML = '<div class="bar ' + barClass(e.hours) + '" style="height:' + pct + '%" data-tip="' + formatHours(e.hours) + ' · ' + e.quality + '"></div><div class="bar-label">' + day + '</div>';
-      chart.appendChild(group);
-    }
-  }
+  
 
   var list = document.getElementById('entries-list');
   if (data.length === 0) {
-    list.innerHTML = '<div class="empty-state"><span class="moon">🌙</span>Aucune nuit enregistrée<br>Commence par ajouter ta première nuit !</div>';
+    list.innerHTML = '<div class="empty-state">Aucune nuit enregistrée<br>Commence par ajouter ta première nuit !</div>';
     return;
   }
   var html = '';
   for (var k = 0; k < data.length; k++) {
     var entry = data[k];
     var safeId = entry.id.replace(/'/g, '');
+    var d = new Date(entry.start);
+    var dayStr = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear();
+    var days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+    var dayName = days[d.getDay()];
+    var startTime = pad(new Date(entry.start).getHours()) + ':' + pad(new Date(entry.start).getMinutes());
+    var endTime   = pad(new Date(entry.end).getHours())   + ':' + pad(new Date(entry.end).getMinutes());
     html += '<div class="entry-row">' +
-      '<div class="entry-times">' +
-        '<div class="entry-time">🌙 ' + formatDT(entry.start) + '</div>' +
-        '<div class="entry-time">☀️ ' + formatDT(entry.end) + '</div>' +
-      '</div>' +
-      '<div class="entry-duration">' + formatHours(entry.hours) + '</div>' +
-      '<span class="quality-badge ' + qualityClass(entry.quality) + '">' + entry.quality + '</span>' +
-      '<button class="btn-del" onclick="deleteEntry(\'' + safeId + '\')" title="Supprimer">&#x2715;</button>' +
+      '<div class="info"><div class="entry-dayname">' + dayName + '</div><div class="entry-datestr">' + dayStr + '</div>'+'</div>' +
+      
+      '<div class="heurenuit">' + formatHours(entry.hours) + '</div>'+
+      
+      '<div class="heuresnuit">' +'<div class="quality-badge ' + qualityClass(entry.quality) + '">' + entry.quality + '</div>'+ startTime + ' → ' + endTime + '</div>' +
+      
     '</div>';
   }
   list.innerHTML = html;
@@ -410,6 +454,7 @@ function render() {
 
 initDefaults();
 render();
+
 </script>
 </body>
 </html>

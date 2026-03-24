@@ -70,8 +70,31 @@ function saveXP(XP) {
 }
 
 const stats = document.getElementById("stats");
+function calculerScoreSommeil() {
+  try {
+    var data = JSON.parse(localStorage.getItem('sleep_entries_v2')) || [];
+    if (data.length === 0) return null;
+    var entry = data[0];
+    var startDate = new Date(entry.start);
+    var scoreQuantite = Math.min((entry.hours / 8) * 80, 80);
+    var coefQualite = { 'Excellente': 1.0, 'Bonne': 0.85, 'Moyenne': 0.6, 'Mauvaise': 0.4 }[entry.quality] || 0.85;
+    var hC = startDate.getHours(), mC = startDate.getMinutes();
+    var diff = Math.abs((hC * 60 + mC) - (23 * 60));
+    var scoreRegularite = diff <= 30 ? 20 : diff <= 60 ? 10 : diff <= 90 ? 5 : 0;
+    return Math.round((scoreQuantite + scoreRegularite) * coefQualite);
+  } catch(e) { return null; }
+}
+ 
+function calculerIndiceVie() {
+  var scoreSommeil = calculerScoreSommeil();
+  if (scoreSommeil === null) return null;
+  return scoreSommeil;
+}
+ 
 function refresh(){
-stats.innerHTML =`<h4>Indice de vie : <br> 78 / 100</h4>
+  var indice = calculerIndiceVie();
+  var indiceStr = indice !== null ? indice + ' / 100' : '-- / 100';
+  stats.innerHTML =`<h4>Indice de vie : <br> ${indiceStr}</h4>
     <h4>Experience : <br> ${getXP()} XP </h4>
     <h4 id='streak'>Streak : <br> 12 jours</h4>
   `;
@@ -148,12 +171,17 @@ document.getElementById('streak-btn').addEventListener('click', () => {
   if (result !== null) updateStreakUI();
 });
 
+
+
+
+
 // Au chargement de la page
 updateStreakUI();
 
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/Site---MyTracker/service-worker.js");
   }
+
 </script>
 
 

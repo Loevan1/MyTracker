@@ -201,7 +201,10 @@ label{
 }
 .heuresnuit{
   margin-right: 10px;
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap:3px
 }
 
 
@@ -222,6 +225,21 @@ label{
   margin: 10px;
   text-align: center;
 }
+
+.score-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-align: center;
+  color: white;
+  display: inline-block;
+  width: fit-content;
+}
+.score-excellent { background-color: #16A34A; }
+.score-bon       { background-color: #2563EB; }
+.score-moyen     { background-color: #D97706; }
+.score-faible    { background-color: #DC2626; }
 
 </style>
 </head>
@@ -299,6 +317,31 @@ label{
 
 <script>
 var STORAGE_KEY = 'sleep_entries_v2';
+function calculerScore(entry) {
+  var startDate = new Date(entry.start);
+  
+ 
+   var scoreQuantite = Math.min((entry.hours / 8) * 80, 80);
+var coefQualite = { 'Excellente': 1.0, 'Bonne': 0.85, 'Moyenne': 0.6, 'Mauvaise': 0.4 }[entry.quality] || 0.85;
+ 
+  var hC = startDate.getHours(), mC = startDate.getMinutes();
+  var diff = Math.abs((hC * 60 + mC) - (23 * 60 + 0));
+  var scoreRegularite = diff <= 30 ? 20 : diff <= 60 ? 10 : diff <= 90 ? 5 : 0;
+ 
+
+
+
+
+return Math.round((scoreQuantite + scoreRegularite) * coefQualite);
+}
+
+
+function scoreClass(s) {
+  if (s >= 85) return 'score-excellent';
+  if (s >= 70) return 'score-bon';
+  if (s >= 50) return 'score-moyen';
+  return 'score-faible';
+}
 
 function pad(n) { return String(n).padStart(2, '0'); }
 
@@ -440,12 +483,15 @@ function render() {
     var dayName = days[d.getDay()];
     var startTime = pad(new Date(entry.start).getHours()) + ':' + pad(new Date(entry.start).getMinutes());
     var endTime   = pad(new Date(entry.end).getHours())   + ':' + pad(new Date(entry.end).getMinutes());
+    var score = calculerScore(entry);
     html += '<div class="entry-row">' +
       '<div class="info"><div class="entry-dayname">' + dayName + '</div><div class="entry-datestr">' + dayStr + '</div>'+'</div>' +
       
       '<div class="heurenuit">' + formatHours(entry.hours) + '</div>'+
       
-      '<div class="heuresnuit">' +'<div class="quality-badge ' + qualityClass(entry.quality) + '">' + entry.quality + '</div>'+ startTime + ' → ' + endTime + '</div>' +
+      '<div class="heuresnuit">' +'<div class="score-badge ' + scoreClass(score) + '">' + score + '/100</div>' + startTime + ' → ' + endTime + '</div>' +
+       
+      
       
     '</div>';
   }

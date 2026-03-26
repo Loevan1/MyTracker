@@ -79,7 +79,10 @@ function calculerScoreSommeil() {
     var scoreQuantite = Math.min((entry.hours / 8) * 80, 80);
     var coefQualite = { 'Excellente': 1.0, 'Bonne': 0.85, 'Moyenne': 0.6, 'Mauvaise': 0.4 }[entry.quality] || 0.85;
     var hC = startDate.getHours(), mC = startDate.getMinutes();
-    var diff = Math.abs((hC * 60 + mC) - (23 * 60));
+    var coucherMin = (hC < 12 ? hC + 24 : hC) * 60 + mC;
+  var cibleMin = 23 * 60;
+  // Se coucher avant la cible = plein score, après = pénalité
+  var diff = coucherMin <= cibleMin ? 0 : coucherMin - cibleMin;
     var scoreRegularite = diff <= 30 ? 20 : diff <= 60 ? 10 : diff <= 90 ? 5 : 0;
     return Math.round((scoreQuantite + scoreRegularite) * coefQualite);
   } catch(e) { return null; }

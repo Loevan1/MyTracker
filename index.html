@@ -31,9 +31,27 @@
         <h4>Jour de la semaine : <br> Samedi</h4>
     </div>
     </div>
-    <div id="streak-widget">
-  <button id="streak-btn">Valider ma journée</button>
+    
+
+  <div id="citations">
+    
+    <div class="card">
+      <span class="ornament">"</span>
+    <div id="quoteText"></div>
+    <span class="ornament2">"</span>
+    <div class="author">— <span id="quoteAuthor"></span></div>
   </div>
+  </div>
+
+  
+
+<div class="checkin-card">
+      <div class="checkin-label">Check-in du jour 🔥</div>
+      <div class="checkin-sub">Valide ta journée pour garder ta streak</div>
+  <button class="streak-btn" id="streak-btn">
+    Valider ma journée
+  </button>
+</div>
     <footer>
             <div id="foot">
             <a href="index.html"><img src="icones/home.png" id="icone"></a>
@@ -176,11 +194,78 @@ document.getElementById('streak-btn').addEventListener('click', () => {
 
 
 
+const citations = [
+  { texte: "La vie est ce qui arrive quand vous êtes occupé à faire d'autres projets.", auteur: "John Lennon" },
+  { texte: "Le succès, c'est d'aller d'échec en échec sans perdre son enthousiasme.", auteur: "Winston Churchill" },
+  { texte: "Soyez le changement que vous voulez voir dans le monde.", auteur: "Mahatma Gandhi" },
+  { texte: "Un voyage de mille lieues commence toujours par un premier pas.", auteur: "Lao-Tseu" },
+  { texte: "L'imagination est plus importante que le savoir.", auteur: "Albert Einstein" },
+  { texte: "Il faut toujours viser la lune, car même en cas d'échec, on atterrit dans les étoiles.", auteur: "Oscar Wilde" },
+  { texte: "Ce que nous sommes est le fruit de ce que nous avons pensé.", auteur: "Bouddha" },
+  { texte: "La seule façon de faire du bon travail est d'aimer ce que vous faites.", auteur: "Steve Jobs" },
+  { texte: "Tu ne peux pas retourner en arrière et changer le début, mais tu peux commencer là où tu es et changer la fin.", auteur: "C.S. Lewis" },
+  { texte: "La liberté commence où l'ignorance finit.", auteur: "Victor Hugo" },
+  { texte: "Le bonheur n'est pas quelque chose que l'on trouve, c'est quelque chose que l'on crée.", auteur: "Aristote" },
+  { texte: "L'échec est la condition du succès. Chaque échec enseigne quelque chose à l'homme.", auteur: "Gustave Flaubert" },
+  { texte: "Agis comme si ce que tu fais faisait une différence. C'est le cas.", auteur: "William James" },
+  { texte: "La plus grande gloire n'est pas de ne jamais tomber, mais de se relever à chaque chute.", auteur: "Confucius" },
+  { texte: "La connaissance s'acquiert par l'expérience, tout le reste n'est que de l'information.", auteur: "Albert Einstein" },
+  { texte: "Celui qui déplace des montagnes commence par enlever de petites pierres.", auteur: "Confucius" },
+  { texte: "Je n'ai pas échoué. J'ai simplement trouvé dix mille façons qui ne fonctionnent pas.", auteur: "Thomas Edison" },
+  { texte: "Il n'y a qu'une façon d'échouer, c'est d'abandonner avant d'avoir réussi.", auteur: "Georges Clémenceau" },
+  { texte: "Le doute est l'ennemi du possible.", auteur: "François Rabelais" },
+  { texte: "Vis comme si tu devais mourir demain. Apprends comme si tu devais vivre toujours.", auteur: "Mahatma Gandhi" },
+  { texte: "Ce n'est pas parce que les choses sont difficiles que nous n'osons pas, c'est parce que nous n'osons pas qu'elles sont difficiles.", auteur: "Sénèque" },
+  { texte: "Nous sommes ce que nous faisons répétitivement. L'excellence n'est donc pas un acte mais une habitude.", auteur: "Aristote" },
+  { texte: "L'avenir appartient à ceux qui croient en la beauté de leurs rêves.", auteur: "Eleanor Roosevelt" },
+  { texte: "Le chemin se fait en marchant.", auteur: "Antonio Machado" },
+  { texte: "On ne voit bien qu'avec le cœur. L'essentiel est invisible pour les yeux.", auteur: "Antoine de Saint-Exupéry" },
+  { texte: "Chaque jour est une nouvelle chance de changer votre vie.", auteur: "Anonyme" },
+  { texte: "Les obstacles sont ces choses effrayantes que l'on voit quand on perd de vue ses objectifs.", auteur: "Henry Ford" },
+  { texte: "La beauté d'une vie bien vécue réside dans ses détails.", auteur: "Virginia Woolf" },
+  { texte: "Peu importe la lenteur de ta progression, tu as toujours une longueur d'avance sur ceux qui n'essaient pas.", auteur: "Confucius" },
+  { texte: "Ce n'est pas la destination qui compte, c'est le voyage.", auteur: "Ralph Waldo Emerson" },
+];
+ 
+// Époque de référence : 1er janvier 2026
+const EPOCH = new Date(2026, 0, 1);
+const MS_PAR_JOUR = 86400000;
+ 
+function joursDepuisEpoch(date) {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  return Math.floor((d - EPOCH) / MS_PAR_JOUR);
+}
+ 
+function dateDeJour(offset) {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d;
+}
+ 
+const totalCitations = citations.length;
+let offsetJour = 0;
+ 
+function indexDuJour(date) {
+  return ((joursDepuisEpoch(date) % totalCitations) + totalCitations) % totalCitations;
+}
+ 
 
+function render() {
+  const date = dateDeJour(offsetJour);
+  const idx  = indexDuJour(date);
+  const cite = citations[idx];
+ 
+ 
+  // Quote
+
+ 
+  document.getElementById('quoteText').textContent = cite.texte;
+  document.getElementById('quoteAuthor').textContent = cite.auteur;
+}
 
 // Au chargement de la page
 updateStreakUI();
-
+render()
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/Site---MyTracker/service-worker.js");
   }
@@ -291,16 +376,74 @@ p{
   background-color: #FFFFFF;
   box-shadow: 0 6px 18px rgba(0,0,0,0.05);
 }
-#streak-btn{
+
+
+#citations{
   display: flex;
-  justify-self: center ;
-  margin-top: 50px;
+  justify-self: center;
+  margin: 30px;
+}
+#quoteText{
+text-align:center;
+font-weight: bold;
+font-style: italic;
+}
+.author{
+text-align:center;
+}
+
+.ornament{
+  font-size: 1.5em;
+  font-weight:bolder;
+  font-style: italic;
+}
+.ornament2{
+  font-size: 1.5em;
+  font-weight:bolder;
+  font-style: italic;
+  display: flex;
+  justify-content: end;
+}
+
+
+
+.checkin-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
+  gap: 10px;
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px ;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+
+}
+
+
+.checkin-label {
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.checkin-sub {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 10px;
+}
+
+
+#streak-btn{
   background-color: #2563EB;
   color: white;
   border: none;
   padding: 5px 15px;
   border-radius: 6px;
   font-weight: 500;
+  text-align: center;
+  width: 200px;
+  
 }
 
 #streak-btn:hover{

@@ -507,6 +507,28 @@ function render() {
   list.innerHTML = html;
 }
 
+// Dans la page (sommeil.html par exemple)
+async function programmerRappelSommeil() {
+  const reg = await navigator.serviceWorker.ready;
+
+  const maintenant = new Date();
+  const demain7h = new Date();
+  demain7h.setDate(maintenant.getDate() );
+  demain7h.setHours(22, 35, 0, 0);
+
+  const delai = demain7h - maintenant; // en ms
+
+  // On envoie le délai au SW
+  reg.active.postMessage({
+    type: "PROGRAMMER_RAPPEL",
+    delai,
+    titre: "Sommeil 🌙",
+    body: "Tu n'as pas encore renseigné ta nuit !"
+  });
+}
+
+
+
 initDefaults();
 render();
 

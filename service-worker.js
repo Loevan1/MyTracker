@@ -1,4 +1,4 @@
-const CACHE_NAME = "mytracker-v13";
+const CACHE_NAME = "mytracker-v14";
 const FILES_TO_CACHE = [
   "/Site---MyTracker/",
   "/Site---MyTracker/index.html"
@@ -23,4 +23,14 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => response || fetch(event.request))
   );
+});
+
+// Dans sw.js
+self.addEventListener("message", (event) => {
+  if (event.data.type === "PROGRAMMER_RAPPEL") {
+    const { delai, titre, body } = event.data;
+    setTimeout(() => {
+      self.registration.showNotification(titre, { body, icon: "/icone.png" });
+    }, delai);
+  }
 });

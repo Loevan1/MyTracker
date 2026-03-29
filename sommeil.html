@@ -246,6 +246,13 @@ label{
 .score-s35   { background-color: #ef9a3a; } 
 .score-s0    { background-color: #EF4444; } 
 
+
+.entry-row .delete-btn {
+  display: none;
+}
+.entry-row:hover .delete-btn{
+  display: block;
+}
 </style>
 </head>
 <body>
@@ -493,13 +500,14 @@ function render() {
     var startTime = pad(new Date(entry.start).getHours()) + ':' + pad(new Date(entry.start).getMinutes());
     var endTime   = pad(new Date(entry.end).getHours())   + ':' + pad(new Date(entry.end).getMinutes());
     var score = calculerScore(entry);
-    html += '<div class="entry-row">' +
+    var supprBtn =  '<button class="delete-btn" onclick="deleteLastEntry()" style="background:white;color:black;border:black solid 1px;border-radius:6px;padding:3px 6px;font-size:12px;cursor:pointer;">✕</button>' ;
+    
+html += '<div class="entry-row">' + 
       '<div class="info"><div class="entry-dayname">' + dayName + '</div><div class="entry-datestr">' + dayStr + '</div>'+'</div>' +
       
       '<div class="heurenuit">' + formatHours(entry.hours) + '</div>'+
       
-      '<div class="heuresnuit">' +'<div class="score-badge ' + scoreClass(score) + '">' + score + '/100</div>' + startTime + ' → ' + endTime + '</div>' +
-       
+      '<div class="heuresnuit">' + '<div style="display:flex;align-items:center;gap:5px;"><div class="score-badge ' + scoreClass(score) + '">' + score + '/100</div>' + supprBtn + '</div>' + startTime + ' → ' + endTime + '</div>' +
       
       
     '</div>';
@@ -527,6 +535,15 @@ async function programmerRappelSommeil() {
   });
 }
 
+
+function deleteLastEntry() {
+  var data = load();
+  if (data.length === 0) return;
+  data.shift(); // supprime le premier élément (le plus récent, vu le tri)
+  save(data);
+  render();
+  toast('Dernière nuit supprimée.');
+}
 
 
 initDefaults();

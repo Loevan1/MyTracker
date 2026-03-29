@@ -260,7 +260,8 @@ footer {
 
 
 <script>
-  const TODAY = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const TODAY = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
   const DAYS_FR = [ 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam','Dim'];
   const MONTHS_FR = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 
@@ -282,7 +283,7 @@ function getXP() {
     let streak = 0;
     let d = new Date(TODAY);
     while (true) {
-      const key = d.toISOString().slice(0, 10);
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
       const log = data.log[key];
       if (log && log.includes(habitId)) {
         streak++;
@@ -368,7 +369,7 @@ function getXP() {
   for (let i = 0; i < 7; i++) {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
-    const key = d.toISOString().slice(0, 10);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     const log = data.log[key] || [];
 
       const col = document.createElement('div');

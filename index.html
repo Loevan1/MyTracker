@@ -122,15 +122,15 @@ function refresh(){
 }
 refresh();
 function getTodayStr() {
-  return new Date().toISOString().slice(0, 10); // "2026-03-15"
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
 function getYesterdayStr() {
   const d = new Date();
   d.setDate(d.getDate() - 1);
-  return d.toISOString().slice(0, 10);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-
 function loadStreak() {
   return {
     count: parseInt(localStorage.getItem('streak_count') || '0'),

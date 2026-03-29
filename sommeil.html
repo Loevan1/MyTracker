@@ -500,7 +500,7 @@ function render() {
     var startTime = pad(new Date(entry.start).getHours()) + ':' + pad(new Date(entry.start).getMinutes());
     var endTime   = pad(new Date(entry.end).getHours())   + ':' + pad(new Date(entry.end).getMinutes());
     var score = calculerScore(entry);
-    var supprBtn =  '<button class="delete-btn" onclick="deleteLastEntry()" style="background:white;color:black;border:black solid 1px;border-radius:6px;padding:3px 6px;font-size:12px;cursor:pointer;">✕</button>' ;
+    var supprBtn = k === 0 ? '<button class="delete-btn" onclick="deleteLastEntry()" style="background:white;color:black;border:black solid 1px;border-radius:6px;padding:3px 6px;font-size:12px;cursor:pointer;">✕</button>' : '';
     
 html += '<div class="entry-row">' + 
       '<div class="info"><div class="entry-dayname">' + dayName + '</div><div class="entry-datestr">' + dayStr + '</div>'+'</div>' +

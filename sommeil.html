@@ -336,7 +336,12 @@ function calculerScore(entry) {
    var scoreQuantite = Math.min((entry.hours / 8) * 80, 80);
 var coefQualite = { 'Excellente': 1.0, 'Bonne': 0.85, 'Moyenne': 0.6, 'Mauvaise': 0.4 }[entry.quality] || 0.85;
  
-  var hC = startDate.getHours(), mC = startDate.getMinutes();
+  if (entry.startStr) {
+  var parts = entry.startStr.split(':').map(Number);
+  hC = parts[0]; mC = parts[1];
+} else {
+  hC = startDate.getUTCHours(); mC = startDate.getUTCMinutes();
+}
    var coucherMin = (hC < 12 ? hC + 24 : hC) * 60 + mC;
   var cibleMin = 23 * 60;
   // Se coucher avant la cible = plein score, après = pénalité
@@ -363,8 +368,8 @@ function pad(n) { return String(n).padStart(2, '0'); }
 
 function getTodayStr() {
   var now = new Date();
-  now.setDate(now.getDate() - 1);
-  return now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
+  var hier = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+  return hier.getFullYear() + '-' + pad(hier.getMonth()+1) + '-' + pad(hier.getDate());
 }
  
 function initDefaults() {
@@ -379,11 +384,16 @@ function getStartEnd() {
   var et = document.getElementById('end-time').value;
   if (!st || !et) return null;
  
-  var start = new Date(date + 'T' + st);
-  var end = new Date(date + 'T' + et);
-  // Si heure fin <= heure début, on considère que le réveil est le lendemain
-  if (end <= start) { end.setDate(end.getDate() + 1); }
-  return { start: start, end: end, date: date };
+  var stParts = st.split(':').map(Number);
+var etParts = et.split(':').map(Number);
+var startMin = stParts[0] * 60 + stParts[1];
+var endMin   = etParts[0] * 60 + etParts[1];
+if (endMin <= startMin) endMin += 24 * 60;
+var hours = (endMin - startMin) / 60;
+var baseUTC = new Date(date + 'T00:00:00Z').getTime();
+var startISO = new Date(baseUTC + startMin * 60000).toISOString();
+var endISO   = new Date(baseUTC + endMin   * 60000).toISOString();
+return { start: startISO, end: endISO, date: date, hours: hours, st: st, et: et };
 }
 
 function load() {
@@ -425,7 +435,7 @@ function updatePreview() {
   var el = document.getElementById('duration-preview');
   var times = getStartEnd();
   if (!times) { el.textContent = ''; return; }
-  var diff = (times.end - times.start) / 3600000;
+  var diff = times.hours;
   if (diff <= 0 || diff > 24) {
     el.textContent = 'Durée invalide';
     el.className = 'duration-preview err';
@@ -441,23 +451,25 @@ function addEntry() {
   var quality = document.getElementById('quality').value;
   var times = getStartEnd();
   if (!times) { toast('Remplis tous les champs'); return; }
-  var hours = (times.end - times.start) / 3600000;
+  var hours = times.hours;
   if (hours <= 0 || hours > 24) { toast('Vérifie les heures'); return; }
  
   var data = load();
   // Vérifier si une entrée existe déjà pour aujourd'hui (même date de début)
   for (var i = 0; i < data.length; i++) {
     var entryDate = new Date(data[i].start);
-    var entryDateStr = entryDate.getFullYear() + '-' + pad(entryDate.getMonth()+1) + '-' + pad(entryDate.getDate());
+    var entryDateStr = entryDate.getUTCFullYear() + '-' + pad(entryDate.getUTCMonth()+1) + '-' + pad(entryDate.getUTCDate());
     if (entryDateStr === date) { toast('Nuit déjà enregistrée aujourd\'hui !'); return; }
   }
   var id = date + 'T' + document.getElementById('start-time').value;
   data.push({
     id: id,
-    start: times.start.toISOString(),
-    end: times.end.toISOString(),
+    start: times.start,
+    end: times.end,
     hours: hours,
-    quality: quality
+    quality: quality,
+    startStr: times.st,
+    endStr: times.et
   });
   data.sort(function(a, b) { return b.start.localeCompare(a.start); });
   save(data);
@@ -497,8 +509,8 @@ function render() {
     var dayStr = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear();
     var days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
     var dayName = days[d.getDay()];
-    var startTime = pad(new Date(entry.start).getHours()) + ':' + pad(new Date(entry.start).getMinutes());
-    var endTime   = pad(new Date(entry.end).getHours())   + ':' + pad(new Date(entry.end).getMinutes());
+    var startTime = entry.startStr || (pad(new Date(entry.start).getUTCHours()) + ':' + pad(new Date(entry.start).getUTCMinutes()));
+var endTime   = entry.endStr   || (pad(new Date(entry.end).getUTCHours())   + ':' + pad(new Date(entry.end).getUTCMinutes()));
     var score = calculerScore(entry);
     var supprBtn = k === 0 ? '<button class="delete-btn" onclick="deleteLastEntry()" style="background:white;color:black;border:black solid 1px;border-radius:6px;padding:3px 6px;font-size:12px;cursor:pointer;">✕</button>' : '';
     

@@ -112,5 +112,23 @@ footer {
 const container = document.getElementById("container");
 const tachesFini = getTachesFaites()
   container.innerHTML = `Taches faites : ${tachesFini}`;
+
+
+var STORAGE_KEY = 'sleep_entries_v2';
+var data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+data = data.map(function(entry) {
+  if (!entry.startStr) {
+    var s = new Date(entry.start);
+    var e = new Date(entry.end);
+    var pad = function(n) { return String(n).padStart(2, '0'); };
+    entry.startStr = pad(s.getHours()) + ':' + pad(s.getMinutes());
+    entry.endStr   = pad(e.getHours()) + ':' + pad(e.getMinutes());
+  }
+  return entry;
+});
+
+localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+console.log('Migration OK —', data.length, 'entrées mises à jour');
 </script>
 </html>

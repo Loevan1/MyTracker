@@ -115,7 +115,24 @@ const container = document.getElementById("container");
 const tachesFini = getTachesFaites()
   container.innerHTML = `Taches faites : ${tachesFini}`;
 
+let data = JSON.parse(localStorage.getItem('sleep_entries_v2'));
 
+// 2. Modifier l'élément à l'index 0
+// Tu peux changer les valeurs ci-dessous selon tes besoins
+if (data && data.length > 0) {
+    data[1].id = "2026-03-29T02:30"; // Exemple de modification
+    data[1].start = "2026-03-29T00:30:00.000Z";
+    data[1].end = "2026-03-30T04:30:00.000Z";
+    data[1].hours = 4; // N'oublie pas de recalculer la durée si tu changes les heu
+
+    // 3. Renvoyer le tableau modifié dans le localStorage
+    localStorage.setItem('sleep_entries_v2', JSON.stringify(data));
+    
+    console.log("L'entrée 0 a été mise à jour !");
+    location.reload(); // Recharge la page pour appliquer les changements visuels
+} else {
+    console.error("Aucune donnée trouvée à l'index 0.");
+}
 
 </script>
 </html>

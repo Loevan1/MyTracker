@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sommeil</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ *{
+    font-family:'Poppins', sans-serif; 
+    margin: 0px;
+}
+body{
+  background-color:#F1F5F9;
+  color: #1E293B;
+  padding-bottom: 60px;
+}
+h2{
+  display: flex;
+  justify-content: center;
+  margin: 15px;
+}
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+a:visited {
+  color:#007bff
+}
+a:active {
+  color: red;
+}
+header{
+  background-color: #f0f8ff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-bottom: 5px solid #f8f8f9;
+}
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding-top: 10px;
+  color: white;
+  box-sizing: border-box;
+}
+#icone{
+  width: 25px;
+  height: 25px;
+}
+#iconesommeil{
+   width: 30px;
+  height: 23px;
+}
+#foot{
+  padding: 7px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: rgb(190, 218, 241) 3px solid;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.input,.quality-select{
+  background-color: #E2E8F0;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 2px 2px;
+  width: 65px;
+}
+.nouvelle_nuit{
+  margin: 10px;
+  border: none;
+  border-radius: 12px;
+  padding: 10px;
+  background-color: #FFFFFF;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+h3{
+  font-size: large;
+  margin: 5px 0px 10px 0px;
+  color: #16A34A;
+}
+#quality{
+  width: 100px;
+}
+.form-grid{
+  display: flex;
+  justify-content: space-between;
+}
+#basnouvellenuit{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  align-items:end;
+}
+#creer{
+  background-color: #2563EB;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+#creer:hover{
+  background-color: #1E40AF;
+}
+label{
+  margin-right: 15px;
+}
+#duration-preview{
+  font-size: large;
+  font-weight: bold;
+  color: #16A34A ;
+}
+.stats-grid{
+  display: flex;
+  justify-content: space-evenly;
+}
+.stat-label{
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 20px;
+}
+.stat-value{
+  border: none;
+  margin: 5px;
+  padding: 5px;
+  border-radius: 12px;
+  background-color: #FFFFFF;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  width: 80px;
+  text-align: center;
+}
+.entry-row{
+  border: solid 1px black;
+  margin: 10px;
+  padding: 5px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #FFFFFF;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+}
+.entry-row:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+.info{
+  margin: 5px;
+  width: 35%;
+}
+.heuresnuit{
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap:3px
+}
+.heurenuit{
+  width: 20%;
+  margin-right: 20px;
+  text-align: center;
+  font-size:large;
+  font-weight: bold;
+  color: #16A34A ;
+}
+.entry-datestr,.entry-dayname{
+  font-weight: bold;
+}
+#toast,.empty-state{
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  text-align: center;
+}
+.score-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-align: center;
+  color: white;
+  display: inline-block;
+  width: fit-content;
+}
+.score-s80   { background-color: #16A34A}
+.score-s65   { background-color: #3B82F6; } 
+.score-s50   { background-color: #06B6D4; } 
+.score-s35   { background-color: #ef9a3a; } 
+.score-s0    { background-color: #EF4444; } 
+.entry-row .delete-btn {
+  display: none;
+}
+.entry-row:hover .delete-btn{
+  display: block;
+}
+</style>
+</head>
+<body>
+<div class="app">
+    <header>
+      <h1><a href="index.html"></a>MyTracker</h1>
+    </header>
+
+  <div class="nouvelle_nuit">
+    <div class="form-grid">
+      <div class="field">
+        <label>De</label>
+        <input type="time" id="start-time" class="input" oninput="updatePreview()" />
+      </div>
+      <div class="field">
+        <label>à</label>
+        <input type="time" id="end-time" class="input" oninput="updatePreview()" />
+      </div>
+      <div class="field">
+        <select id="quality" class="quality-select">
+          <option value="Excellente">Excellente</option>
+          <option value="Bonne" selected>Bonne</option>
+          <option value="Moyenne">Moyenne</option>
+          <option value="Mauvaise">Mauvaise</option>
+        </select>
+      </div>
+    </div>
+    <div id="basnouvellenuit">
+      <div class="duration-preview" id="duration-preview"></div>
+      <button class="btn-add" id="creer" onclick="addEntry()"> Ajouter</button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <div class="stats-grid">
+    <div class="stat-card blue"><div class="stat-value" id="stat-avg">--</div></div>
+    <div class="stat-card purple"><div class="stat-value" id="stat-total">--</div></div>
+  </div>
+  <div class="stat-label">
+    <div>Moyenne / nuit</div>
+    <div>Nuits au total</div>
+  </div>
+
+  <div class="entries-section">
+    <div class="section-header">
+      <div class="section-title"><h2>Historique </h2></div>
+    </div>
+    <div id="entries-list"></div>
+  </div>
+</div>
+
+<footer>
+  <div id="foot">
+    <a href="index.html"><img src="icones/home.png" id="icone"></a>
+    <a href="todolist.html"><img src="icones/tache.png" id="icone"></a>
+    <a href="habitudes.html"><img src="icones/habitudes.png" id="icone"></a>
+    <a href="sommeil.html"><img src="icones/sommeil.png" id="iconesommeil"></a>
+    <a href="timer_complet.html"><img src="icones/timer.png" id="icone"></a>
+    <a href="stats.html"><img src="icones/stats.png" id="icone"></a>
+  </div>
+</footer>
+
+<script>
+// ⚠️ Remplace par l'URL de ton fichier sur InfinityFree
+var API_URL = 'https://mytracker.xo.je/sleep_api.php';
+
+// Cache local pour affichage rapide
+var cache = [];
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function getTodayStr() {
+  var now = new Date();
+  now.setDate(now.getDate() - 1);
+  return now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
+}
+
+function initDefaults() {
+  document.getElementById('start-time').value = '23:00';
+  document.getElementById('end-time').value = '06:20';
+  updatePreview();
+}
+
+function getStartEnd() {
+  var date = getTodayStr();
+  var st = document.getElementById('start-time').value;
+  var et = document.getElementById('end-time').value;
+  if (!st || !et) return null;
+  var startStr = date + 'T' + st + ':00';
+  var endDate = date;
+  // Si heure fin <= heure début → réveil lendemain
+  if (et <= st) {
+    var d = new Date(date);
+    d.setDate(d.getDate() + 1);
+    endDate = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+  var endStr = endDate + 'T' + et + ':00';
+  var start = new Date(startStr);
+  var end = new Date(endStr);
+  return { start: start, end: end, startStr: startStr, endStr: endStr, date: date };
+}
+
+function calculerScore(entry) {
+  // entry.start_str = "YYYY-MM-DDTHH:MM:SS"
+  var startDate = new Date(entry.start_str);
+  var scoreQuantite = Math.min((parseFloat(entry.hours) / 8) * 80, 80);
+  var coefQualite = { 'Excellente': 1.0, 'Bonne': 0.85, 'Moyenne': 0.6, 'Mauvaise': 0.4 }[entry.quality] || 0.85;
+  var hC = startDate.getHours(), mC = startDate.getMinutes();
+  var coucherMin = (hC < 12 ? hC + 24 : hC) * 60 + mC;
+  var cibleMin = 23 * 60;
+  var diff = coucherMin <= cibleMin ? 0 : coucherMin - cibleMin;
+  var scoreRegularite = diff <= 30 ? 20 : diff <= 60 ? 10 : diff <= 90 ? 5 : 0;
+  return Math.round((scoreQuantite + scoreRegularite) * coefQualite);
+}
+
+function scoreClass(s) {
+  if (s >= 80) return 'score-s80';
+  if (s >= 65) return 'score-s65';
+  if (s >= 50) return 'score-s50';
+  if (s >= 35) return 'score-s35';
+  return 'score-s0';
+}
+
+function formatHours(h) {
+  var hh = Math.floor(h);
+  var mm = Math.round((h - hh) * 60);
+  return mm > 0 ? hh + 'h' + pad(mm) : hh + 'h';
+}
+
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 2500);
+}
+
+function updatePreview() {
+  var el = document.getElementById('duration-preview');
+  var times = getStartEnd();
+  if (!times) { el.textContent = ''; return; }
+  var diff = (times.end - times.start) / 3600000;
+  if (diff <= 0 || diff > 24) {
+    el.textContent = 'Durée invalide';
+    el.className = 'duration-preview err';
+  } else {
+    el.textContent = 'Sommeil : ' + formatHours(diff);
+    el.className = 'duration-preview';
+  }
+}
+
+async function addEntry() {
+  var date = getTodayStr();
+  var quality = document.getElementById('quality').value;
+  var times = getStartEnd();
+  if (!times) { toast('Remplis tous les champs'); return; }
+  var hours = (times.end - times.start) / 3600000;
+  if (hours <= 0 || hours > 24) { toast('Vérifie les heures'); return; }
+
+  var id = date + 'T' + document.getElementById('start-time').value;
+
+  var btn = document.getElementById('creer');
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  try {
+    var resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'add',
+        id: id,
+        start_str: times.startStr,
+        end_str: times.endStr,
+        hours: hours,
+        quality: quality
+      })
+    });
+    if (resp.status === 409) { toast('Nuit déjà enregistrée aujourd\'hui !'); return; }
+    if (!resp.ok) { toast('Erreur serveur'); return; }
+    toast('Nuit ajoutée !');
+    await loadAndRender();
+  } catch(e) {
+    toast('Erreur réseau');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Ajouter';
+  }
+}
+
+async function deleteEntry(id) {
+  try {
+    var resp = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete', id: id })
+    });
+    if (!resp.ok) { toast('Erreur suppression'); return; }
+    toast('Nuit supprimée.');
+    await loadAndRender();
+  } catch(e) {
+    toast('Erreur réseau');
+  }
+}
+
+async function loadAndRender() {
+  try {
+    var resp = await fetch(API_URL);
+    if (!resp.ok) { toast('Erreur chargement'); return; }
+    cache = await resp.json();
+  } catch(e) {
+    toast('Erreur réseau');
+    cache = [];
+  }
+  render();
+}
+
+function render() {
+  var data = cache;
+
+  if (data.length === 0) {
+    document.getElementById('stat-avg').textContent = '--';
+    document.getElementById('stat-total').textContent = '--';
+  } else {
+    var hours = data.map(function(e) { return parseFloat(e.hours); });
+    var sum = hours.reduce(function(a,b){return a+b;}, 0);
+    document.getElementById('stat-avg').textContent = formatHours(sum / hours.length);
+    document.getElementById('stat-total').textContent = data.length;
+  }
+
+  var list = document.getElementById('entries-list');
+  if (data.length === 0) {
+    list.innerHTML = '<div class="empty-state">Aucune nuit enregistrée<br>Commence par ajouter ta première nuit !</div>';
+    return;
+  }
+
+  var html = '';
+  for (var k = 0; k < data.length; k++) {
+    var entry = data[k];
+    var d = new Date(entry.start_str);
+    var dayStr = pad(d.getDate()) + '/' + pad(d.getMonth()+1) + '/' + d.getFullYear();
+    var days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+    var dayName = days[d.getDay()];
+    var startTime = pad(new Date(entry.start_str).getHours()) + ':' + pad(new Date(entry.start_str).getMinutes());
+    var endTime   = pad(new Date(entry.end_str).getHours())   + ':' + pad(new Date(entry.end_str).getMinutes());
+    var score = calculerScore(entry);
+    var safeId = entry.id.replace(/'/g, "\\'");
+    var supprBtn = k === 0
+      ? '<button class="delete-btn" onclick="deleteEntry(\'' + safeId + '\')" style="background:white;color:black;border:black solid 1px;border-radius:6px;padding:3px 6px;font-size:12px;cursor:pointer;">✕</button>'
+      : '';
+
+    html += '<div class="entry-row">' +
+      '<div class="info"><div class="entry-dayname">' + dayName + '</div><div class="entry-datestr">' + dayStr + '</div></div>' +
+      '<div class="heurenuit">' + formatHours(parseFloat(entry.hours)) + '</div>' +
+      '<div class="heuresnuit"><div style="display:flex;align-items:center;gap:5px;"><div class="score-badge ' + scoreClass(score) + '">' + score + '/100</div>' + supprBtn + '</div>' + startTime + ' → ' + endTime + '</div>' +
+    '</div>';
+  }
+  list.innerHTML = html;
+}
+
+async function programmerRappelSommeil() {
+  const reg = await navigator.serviceWorker.ready;
+  const maintenant = new Date();
+  const rappel = new Date();
+  rappel.setHours(22, 45, 0, 0);
+  const delai = rappel - maintenant;
+  reg.active.postMessage({
+    type: "PROGRAMMER_RAPPEL",
+    delai,
+    titre: "Sommeil 🌙",
+    body: "Tu n'as pas encore renseigné ta nuit !"
+  });
+}
+
+initDefaults();
+loadAndRender();
+</script>
+</body>
+</html>

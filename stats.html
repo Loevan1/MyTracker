@@ -1,120 +1,856 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <title>Stats</title>
-</head>
-<body>
-    <header>
-    <h1><a href="index.html"></a>MyTracker</h1>
-    </header>
-    <h1>Mes stats</h1>
-    <div id="container"></div>
-
-    <p>slt, le site est en developpement !</p>
-
-    <footer>
-     <div id="foot">
-            <a href="index.html"><img src="icones/home.png" id="icone"></a>
-            <a href="todolist.html"><img src="icones/tache.png" id="icone"></a>
-            <a href="habitudes.html"><img src="icones/habitudes.png" id="icone"></a>
-            <a href="sommeil.html"><img src="icones/sommeil.png" id="iconesommeil"></a>
-            <a href="timer_complet.html"><img src="icones/timer.png" id="icone"></a>
-            <a href="stats.html"><img src="icones/stats.png" id="icone"></a>
-            
-            </div>
-        </footer>
-</body>
-
-
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Stats — MyTracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*{
- 
-    font-family:'Poppins', sans-serif; 
-    
-    margin: 0px;
-    
+:root {
+  --bg: #F1F5F9;
+  --surface: #FFFFFF;
+  --border: #E2E8F0;
+  --text: #1E293B;
+  --muted: #64748B;
+  --blue: #2563EB;
+  --green: #16A34A;
+  --orange: #F59E0B;
+  --red: #EF4444;
+  --purple: #7C3AED;
+  --cyan: #0891B2;
 }
 
-body{
-  background-color:#F1F5F9;
-  color: #1E293B;
-  padding-bottom: 60px;
+* { margin: 0; font-family: 'Poppins', sans-serif; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  padding-bottom: 80px;
 }
 
-
-
-a {
-  text-decoration: none;
-  color: #007bff;
-}
-
-a:hover {
-  color: #0056b3;
-  text-decoration: underline;
-}
-
-
-a:visited {
-  color:#007bff
-}
-
-
-a:active {
-  color: red;
-}
-
-header{
-  background-color: #f0f8ff;
+header {
+  background: var(--surface);
   padding: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 6px;
   border-bottom: 5px solid #f8f8f9;
 }
+
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.tab {
+  flex: 1;
+  padding: 6px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--border);
+  color: var(--muted);
+  transition: all .15s;
+}
+.tab.active {
+  background: var(--blue);
+  color: white;
+}
+
+/* SECTIONS */
+.section { display: none; padding: 12px; }
+.section.active { display: block; }
+
+/* XP HERO */
+.xp-hero {
+  background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 60%, #06B6D4 100%);
+  border-radius: 16px;
+  padding: 20px;
+  color: white;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.xp-hero::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+}
+.xp-label { font-size: 0.75rem; opacity: .7; text-transform: uppercase; letter-spacing: 1px; }
+.xp-value { font-size: 3rem; font-weight: 800; line-height: 1; }
+.xp-sub { font-size: 0.8rem; opacity: .75; margin-top: 4px; }
+.xp-bar-wrap { margin-top: 14px; background: rgba(255,255,255,0.2); border-radius: 99px; height: 8px; }
+.xp-bar { height: 8px; border-radius: 99px; background: white; transition: width .6s ease; }
+
+/* KPI GRID */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.kpi-card {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.kpi-icon { font-size: 1.4rem; margin-bottom: 4px; }
+.kpi-val {
+  
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.kpi-lbl { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+.kpi-card.accent-green .kpi-val { color: var(--green); }
+.kpi-card.accent-blue .kpi-val { color: var(--blue); }
+.kpi-card.accent-orange .kpi-val { color: var(--orange); }
+.kpi-card.accent-purple .kpi-val { color: var(--purple); }
+.kpi-card.accent-cyan .kpi-val { color: var(--cyan); }
+.kpi-card.accent-red .kpi-val { color: var(--red); }
+
+/* SECTION TITLE */
+.sec-title {
+  
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin: 16px 0 8px;
+}
+
+/* BAR CHART */
+.bar-chart { display: flex; flex-direction: column; gap: 8px; }
+.bar-row { display: flex; align-items: center; gap: 8px; }
+.bar-name { font-size: 0.72rem; width: 80px; flex-shrink: 0; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; height: 10px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 99px; transition: width .5s ease; }
+.bar-val { font-size: 0.7rem; width: 36px; text-align: right; color: var(--muted); }
+
+/* WEEK HEATMAP */
+.heatmap-wrap { background: var(--surface); border-radius: 14px; padding: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 12px; }
+.heatmap-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; margin-top: 10px; }
+.hm-cell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: white;
+  transition: transform .1s;
+}
+.hm-cell:active { transform: scale(.9); }
+.hm-day-labels { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; margin-bottom: 3px; }
+.hm-day-lbl { font-size: 0.58rem; text-align: center; color: var(--muted); text-transform: uppercase; }
+
+/* SLEEP CHART */
+.sleep-chart-wrap { background: var(--surface); border-radius: 14px; padding: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 12px; overflow: hidden; }
+.sleep-bars { display: flex; align-items: flex-end; gap: 4px; height: 80px; margin-top: 10px; }
+.sleep-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.sleep-bar-inner { width: 100%; border-radius: 4px 4px 0 0; min-height: 4px; transition: height .4s ease; }
+.sleep-bar-lbl { font-size: 0.55rem; color: var(--muted); }
+
+/* SCORE ROW */
+.score-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.score-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.score-name { font-size: 0.8rem; font-weight: 500; flex: 1; margin-left: 10px; }
+.score-num {  font-size: 0.8rem; color: var(--muted); }
+
+/* FOOTER */
 footer {
   position: fixed;
-  bottom: 0;
-  left: 0;
+  bottom: 0; left: 0;
   width: 100%;
   padding-top: 10px;
-  color: white;
-  
   box-sizing: border-box;
 }
-
-#icone{
-  width: 25px;
-  height: 25px;
-}
-
-#iconesommeil{
-   width: 30px;
-  height: 23px;
-  
-}
-#foot{
+#foot {
   padding: 7px;
-  margin-left: 5px;
-  margin-right: 5px;
+  margin: 0 5px;
   border: rgb(190, 218, 241) 3px solid;
   border-radius: 10px;
-  background-color: #FFFFFF;
+  background: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+#icone { width: 25px; height: 25px; }
+#iconesommeil { width: 30px; height: 23px; }
+a { text-decoration: none; }
+a:visited { color: #007bff; }
+
+/* BADGE */
+.badge { display: inline-block; font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 20px; color: white; }
+.badge-green { background: var(--green); }
+.badge-blue { background: var(--blue); }
+.badge-cyan { background: var(--cyan); }
+.badge-orange { background: var(--orange); }
+.badge-red { background: var(--red); }
+
+/* EMPTY */
+.empty { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 20px; }
+
+/* STREAK FLAME */
+.streak-big { font-size: 2.2rem; font-weight: 800;  }
+
+/* RECORD CARD */
+.record-card {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 10px;
+}
+.record-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.record-title { font-size: 0.85rem; font-weight: 600; }
 </style>
+</head>
+<body>
+
+<header><h1>MyTracker — Stats</h1></header>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('global')">Global</button>
+  <button class="tab" onclick="showTab('sommeil')">Sommeil</button>
+  <button class="tab" onclick="showTab('habitudes')">Habitudes</button>
+  <button class="tab" onclick="showTab('taches')">Tâches</button>
+  <button class="tab" onclick="showTab('timer')">Timer</button>
+</div>
+
+<!-- ===== GLOBAL ===== -->
+<div class="section active" id="tab-global">
+
+  <div class="xp-hero">
+    <div class="xp-label">Points d'expérience</div>
+    <div class="xp-value" id="xp-val">0</div>
+    <div class="xp-sub" id="xp-level">Niveau 1 — Débutant</div>
+    <div class="xp-bar-wrap"><div class="xp-bar" id="xp-bar" style="width:0%"></div></div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card accent-green">
+      <div class="kpi-icon">😴</div>
+      <div class="kpi-val" id="g-avg-sleep">--</div>
+      <div class="kpi-lbl">Moyenne sommeil</div>
+    </div>
+    <div class="kpi-card accent-blue">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-val" id="g-tasks-done">0</div>
+      <div class="kpi-lbl">Tâches faites</div>
+    </div>
+    <div class="kpi-card accent-orange">
+      <div class="kpi-icon">🔥</div>
+      <div class="kpi-val" id="g-best-streak">0</div>
+      <div class="kpi-lbl">Meilleure streak</div>
+    </div>
+    <div class="kpi-card accent-purple">
+      <div class="kpi-icon">🎯</div>
+      <div class="kpi-val" id="g-habits-today">0/0</div>
+      <div class="kpi-lbl">Habitudes auj.</div>
+    </div>
+    <div class="kpi-card accent-cyan">
+      <div class="kpi-icon">⏱️</div>
+      <div class="kpi-val" id="g-timer-total">0h</div>
+      <div class="kpi-lbl">Temps de travail</div>
+    </div>
+    <div class="kpi-card accent-green">
+      <div class="kpi-icon">🌙</div>
+      <div class="kpi-val" id="g-sleep-nights">0</div>
+      <div class="kpi-lbl">Nuits enregistrées</div>
+    </div>
+  </div>
+
+  <div class="sec-title">Cette semaine</div>
+  <div class="heatmap-wrap">
+    <div style="font-size:0.78rem;font-weight:600;">Habitudes complétées / jour</div>
+    <div class="hm-day-labels" id="hm-labels"></div>
+    <div class="heatmap-grid" id="heatmap"></div>
+  </div>
+
+</div>
+
+<!-- ===== SOMMEIL ===== -->
+<div class="section" id="tab-sommeil">
+
+  <div class="kpi-grid">
+    <div class="kpi-card accent-blue">
+      <div class="kpi-icon">⏰</div>
+      <div class="kpi-val" id="s-avg">--</div>
+      <div class="kpi-lbl">Moyenne / nuit</div>
+    </div>
+    <div class="kpi-card accent-green">
+      <div class="kpi-icon">🏆</div>
+      <div class="kpi-val" id="s-best">--</div>
+      <div class="kpi-lbl">Meilleure nuit</div>
+    </div>
+    <div class="kpi-card accent-orange">
+      <div class="kpi-icon">📉</div>
+      <div class="kpi-val" id="s-worst">--</div>
+      <div class="kpi-lbl">Nuit la plus courte</div>
+    </div>
+    <div class="kpi-card accent-purple">
+      <div class="kpi-icon">⭐</div>
+      <div class="kpi-val" id="s-score-avg">--</div>
+      <div class="kpi-lbl">Score moyen</div>
+    </div>
+    <div class="kpi-card accent-cyan">
+      <div class="kpi-icon">🕐</div>
+      <div class="kpi-val" id="s-avg-bed">--</div>
+      <div class="kpi-lbl">Heure coucher moy.</div>
+    </div>
+    <div class="kpi-card accent-green">
+      <div class="kpi-icon">☀️</div>
+      <div class="kpi-val" id="s-avg-wake">--</div>
+      <div class="kpi-lbl">Heure réveil moy.</div>
+    </div>
+  </div>
+
+  <div class="sec-title">Répartition qualité</div>
+  <div class="bar-chart" id="quality-bars"></div>
+
+  <div class="sec-title">7 dernières nuits</div>
+  <div class="sleep-chart-wrap">
+    <div style="font-size:0.78rem;font-weight:600;">Durée de sommeil (heures)</div>
+    <div class="sleep-bars" id="sleep-bars"></div>
+  </div>
+
+  
+
+
+
+</div>
+
+<!-- ===== HABITUDES ===== -->
+<div class="section" id="tab-habitudes">
+
+  <div class="kpi-grid">
+    <div class="kpi-card accent-green">
+      <div class="kpi-icon">📋</div>
+      <div class="kpi-val" id="h-total">0</div>
+      <div class="kpi-lbl">Habitudes créées</div>
+    </div>
+    <div class="kpi-card accent-blue">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-val" id="h-today">0</div>
+      <div class="kpi-lbl">Complétées auj.</div>
+    </div>
+    <div class="kpi-card accent-orange">
+      <div class="kpi-icon">🔥</div>
+      <div class="kpi-val" id="h-best-streak">0</div>
+      <div class="kpi-lbl">Meilleure streak</div>
+    </div>
+    <div class="kpi-card accent-purple">
+      <div class="kpi-icon">📅</div>
+      <div class="kpi-val" id="h-total-done">0</div>
+      <div class="kpi-lbl">Total complétions</div>
+    </div>
+  </div>
+
+  <div class="sec-title">Streak par habitude</div>
+  <div class="bar-chart" id="habit-streaks"></div>
+
+  <div class="sec-title">Taux de réussite (7j)</div>
+  <div class="bar-chart" id="habit-rates"></div>
+
+</div>
+
+<!-- ===== TÂCHES ===== -->
+<div class="section" id="tab-taches">
+
+  <div class="kpi-grid">
+    <div class="kpi-card accent-green">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-val" id="t-done">0</div>
+      <div class="kpi-lbl">Tâches faites</div>
+    </div>
+    <div class="kpi-card accent-blue">
+      <div class="kpi-icon">📋</div>
+      <div class="kpi-val" id="t-pending">0</div>
+      <div class="kpi-lbl">En attente</div>
+    </div>
+    <div class="kpi-card accent-orange">
+      <div class="kpi-icon">⚠️</div>
+      <div class="kpi-val" id="t-important">0</div>
+      <div class="kpi-lbl">Importantes</div>
+    </div>
+    <div class="kpi-card accent-red">
+      <div class="kpi-icon">📅</div>
+      <div class="kpi-val" id="t-overdue">0</div>
+      <div class="kpi-lbl">En retard</div>
+    </div>
+  </div>
+
+  <div class="sec-title">Par catégorie</div>
+  <div class="bar-chart" id="cat-bars"></div>
+
+  <div class="sec-title">Par durée</div>
+  <div class="bar-chart" id="dur-bars"></div>
+
+</div>
+
+<!-- ===== TIMER ===== -->
+<div class="section" id="tab-timer">
+
+  <div class="kpi-grid">
+    <div class="kpi-card accent-cyan">
+      <div class="kpi-icon">⏱️</div>
+      <div class="kpi-val" id="tm-total">0h</div>
+      <div class="kpi-lbl">Temps total</div>
+    </div>
+    <div class="kpi-card accent-blue">
+      <div class="kpi-icon">📅</div>
+      <div class="kpi-val" id="tm-sessions">0</div>
+      <div class="kpi-lbl">Sessions</div>
+    </div>
+    <div class="kpi-card accent-green">
+      <div class="kpi-icon">📊</div>
+      <div class="kpi-val" id="tm-avg">0m</div>
+      <div class="kpi-lbl">Durée moyenne</div>
+    </div>
+    <div class="kpi-card accent-orange">
+      <div class="kpi-icon">🏆</div>
+      <div class="kpi-val" id="tm-best-day">0h</div>
+      <div class="kpi-lbl">Meilleur jour</div>
+    </div>
+    <div class="kpi-card accent-purple">
+      <div class="kpi-icon">📅</div>
+      <div class="kpi-val" id="tm-this-week">0h</div>
+      <div class="kpi-lbl">Cette semaine</div>
+    </div>
+    <div class="kpi-card accent-cyan">
+      <div class="kpi-icon">🗺️</div>
+      <div class="kpi-val" id="tm-dept-pct">0%</div>
+      <div class="kpi-lbl">Carte dévoilée</div>
+    </div>
+  </div>
+
+  <div class="sec-title">7 derniers jours</div>
+  <div class="sleep-chart-wrap">
+    <div style="font-size:0.78rem;font-weight:600;">Minutes de travail / jour</div>
+    <div class="sleep-bars" id="timer-bars"></div>
+  </div>
+
+  <div class="sec-title">Sessions récentes</div>
+  <div id="timer-sessions-list"></div>
+
+</div>
+
+<footer>
+  <div id="foot">
+    <a href="index.html"><img src="icones/home.png" id="icone"></a>
+    <a href="todolist.html"><img src="icones/tache.png" id="icone"></a>
+    <a href="habitudes.html"><img src="icones/habitudes.png" id="icone"></a>
+    <a href="sommeil.html"><img src="icones/sommeil.png" id="iconesommeil"></a>
+    <a href="timer_complet.html"><img src="icones/timer.png" id="icone"></a>
+    <a href="stats.html"><img src="icones/stats.png" id="icone"></a>
+  </div>
+</footer>
+
 <script>
-    function getTachesFaites() {
-  return localStorage.getItem("tachesFaites");
+/* ===== UTILS ===== */
+function pad(n) { return String(n).padStart(2,'0'); }
+function todayStr() {
+  const n = new Date();
+  return n.getFullYear()+'-'+pad(n.getMonth()+1)+'-'+pad(n.getDate());
+}
+function fmtH(h) {
+  const hh = Math.floor(h), mm = Math.round((h-hh)*60);
+  return mm > 0 ? hh+'h'+pad(mm) : hh+'h';
+}
+function getKey(d) {
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 }
 
-const container = document.getElementById("container");
-const tachesFini = getTachesFaites()
-  container.innerHTML = `Taches faites : ${tachesFini}`;
+/* ===== TABS ===== */
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
 
+/* ===== DATA LOADERS ===== */
+function getSleepData() {
+  try { return JSON.parse(localStorage.getItem('sleep_entries_v2')) || []; } catch(e) { return []; }
+}
+function getHabitData() {
+  try { return JSON.parse(localStorage.getItem('habitData') || '{"habits":[],"log":{}}'); } catch(e) { return {habits:[],log:{}}; }
+}
+function getTaches() {
+  try { return JSON.parse(localStorage.getItem('taches')) || []; } catch(e) { return []; }
+}
+function getXP() {
+  return parseInt(localStorage.getItem('XP')) || 0;
+}
+function getTachesFaites() {
+  return parseInt(localStorage.getItem('tachesFaites')) || 0;
+}
+function getTimerLog() {
+  try { return JSON.parse(localStorage.getItem('timerLog')) || []; } catch(e) { return []; }
+}
 
+/* ===== SLEEP SCORE ===== */
+function calcScore(entry) {
+  const startDate = new Date(entry.start);
+  const scoreQuantite = Math.min((entry.hours / 8) * 80, 80);
+  const coef = {'Excellente':1.0,'Bonne':0.85,'Moyenne':0.6,'Mauvaise':0.4}[entry.quality] || 0.85;
+  const hC = startDate.getHours(), mC = startDate.getMinutes();
+  const coucherMin = (hC < 12 ? hC+24 : hC)*60+mC;
+  const diff = coucherMin <= 23*60 ? 0 : coucherMin - 23*60;
+  const scoreReg = diff <= 30 ? 20 : diff <= 60 ? 10 : diff <= 90 ? 5 : 0;
+  return Math.round((scoreQuantite + scoreReg) * coef);
+}
+function scoreColor(s) {
+  if (s >= 80) return '#16A34A';
+  if (s >= 65) return '#3B82F6';
+  if (s >= 50) return '#06B6D4';
+  if (s >= 35) return '#F59E0B';
+  return '#EF4444';
+}
+
+/* ===== XP LEVELS ===== */
+function getLevel(xp) {
+  const levels = [
+    {min:0,   max:50,  name:'Débutant',       next:50},
+    {min:50,  max:150, name:'Régulier',        next:150},
+    {min:150, max:300, name:'Appliqué',        next:300},
+    {min:300, max:500, name:'Discipliné',      next:500},
+    {min:500, max:800, name:'Expert',          next:800},
+    {min:800, max:Infinity, name:'Maître',     next:1000},
+  ];
+  for (const l of levels) {
+    if (xp >= l.min && xp < l.max) return l;
+  }
+  return levels[levels.length-1];
+}
+
+/* ===== HABIT STREAK ===== */
+function getStreak(data, habitId) {
+  let streak = 0;
+  const d = new Date();
+  while (true) {
+    const key = getKey(d);
+    const log = data.log[key];
+    if (log && log.includes(habitId)) { streak++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+
+/* ===== RENDER BARS ===== */
+function renderBarChart(containerId, items, color) {
+  // items: [{name, val, formatted}]
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (items.length === 0) { el.innerHTML = '<div class="empty">Aucune donnée</div>'; return; }
+  const max = Math.max(...items.map(i => i.val), 1);
+  el.innerHTML = items.map(item => `
+    <div class="bar-row">
+      <div class="bar-name" title="${item.name}">${item.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(item.val/max*100).toFixed(1)}%;background:${color}"></div></div>
+      <div class="bar-val">${item.formatted || item.val}</div>
+    </div>
+  `).join('');
+}
+
+/* ===== INIT GLOBAL ===== */
+function initGlobal() {
+  const xp = getXP();
+  document.getElementById('xp-val').textContent = xp;
+  const lvl = getLevel(xp);
+  document.getElementById('xp-level').textContent = `Niveau — ${lvl.name}`;
+  const pct = Math.min(((xp - lvl.min) / (lvl.next - lvl.min) * 100), 100).toFixed(1);
+  document.getElementById('xp-bar').style.width = pct + '%';
+
+  // Sleep
+  const sleep = getSleepData();
+  if (sleep.length > 0) {
+    const avg = sleep.reduce((a,b)=>a+b.hours,0)/sleep.length;
+    document.getElementById('g-avg-sleep').textContent = fmtH(avg);
+  }
+  document.getElementById('g-sleep-nights').textContent = sleep.length;
+
+  // Tasks
+  document.getElementById('g-tasks-done').textContent = getTachesFaites();
+
+  // Timer
+  const timerLog = getTimerLog();
+  const totalMin = timerLog.reduce((a,b)=>a+b.minutes,0);
+  document.getElementById('g-timer-total').textContent = totalMin >= 60 ? fmtH(totalMin/60) : totalMin+'m';
+
+  // Habits
+  const hData = getHabitData();
+  const TODAY = todayStr();
+  const todayLog = hData.log[TODAY] || [];
+  document.getElementById('g-habits-today').textContent = todayLog.length+'/'+hData.habits.length;
+
+  // Best streak
+  let bestStreak = 0;
+  hData.habits.forEach(h => { const s = getStreak(hData, h.id); if (s > bestStreak) bestStreak = s; });
+  document.getElementById('g-best-streak').textContent = bestStreak ;
+
+  // Heatmap (7 jours)
+  const DAYS_FR = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const diffToMonday = (dayOfWeek === 0) ? -6 : 1 - dayOfWeek;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+
+  let labelsHtml = '', cellsHtml = '';
+  const maxPerDay = Math.max(hData.habits.length, 1);
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate()+i);
+    const key = getKey(d);
+    const cnt = (hData.log[key] || []).length;
+    const pct = cnt / maxPerDay;
+    let bg = '#E2E8F0';
+    if (pct > 0)   bg = '#BBF7D0';
+    if (pct >= .5) bg = '#4ADE80';
+    if (pct >= 1)  bg = '#16A34A';
+    labelsHtml += `<div class="hm-day-lbl">${DAYS_FR[(d.getDay()+6)%7]}</div>`;
+    cellsHtml  += `<div class="hm-cell" style="background:${bg};color:${pct>0?'white':'#94A3B8'}">${cnt||''}</div>`;
+  }
+  document.getElementById('hm-labels').innerHTML = labelsHtml;
+  document.getElementById('heatmap').innerHTML = cellsHtml;
+}
+
+/* ===== INIT SLEEP ===== */
+function initSleep() {
+  const data = getSleepData();
+  if (data.length === 0) return;
+
+  const hours = data.map(e => e.hours);
+  const avg = hours.reduce((a,b)=>a+b,0)/hours.length;
+  document.getElementById('s-avg').textContent = fmtH(avg);
+  document.getElementById('s-best').textContent = fmtH(Math.max(...hours));
+  document.getElementById('s-worst').textContent = fmtH(Math.min(...hours));
+
+  const scores = data.map(calcScore);
+  const avgScore = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+  document.getElementById('s-score-avg').textContent = avgScore+'/100';
+
+  // Avg bed / wake times
+  const bedMins = data.map(e => {
+    const d = new Date(e.start);
+    let m = d.getHours()*60+d.getMinutes();
+    if (m < 12*60) m += 24*60;
+    return m;
+  });
+  const avgBed = Math.round(bedMins.reduce((a,b)=>a+b,0)/bedMins.length);
+  const bH = Math.floor(avgBed/60)%24, bM = avgBed%60;
+  document.getElementById('s-avg-bed').textContent = pad(bH)+':'+pad(bM);
+
+  const wakeMins = data.map(e => { const d = new Date(e.end); return d.getHours()*60+d.getMinutes(); });
+  const avgWake = Math.round(wakeMins.reduce((a,b)=>a+b,0)/wakeMins.length);
+  document.getElementById('s-avg-wake').textContent = pad(Math.floor(avgWake/60))+':'+pad(avgWake%60);
+
+  // 7 dernières nuits chart
+  const last7 = data.slice(0, 7).reverse();
+  const maxH = Math.max(...last7.map(e=>e.hours), 9);
+  const barsEl = document.getElementById('sleep-bars');
+  barsEl.innerHTML = last7.map(e => {
+    const pct = (e.hours/maxH*100).toFixed(1);
+    const d = new Date(e.start);
+    const DAYS=['Di','Lu','Ma','Me','Je','Ve','Sa'];
+    const col = e.hours >= 8 ? '#16A34A' : e.hours >= 6 ? '#3B82F6' : '#EF4444';
+    return `<div class="sleep-bar-col">
+      <div class="sleep-bar-inner" style="height:${pct}%;background:${col}"></div>
+      <div class="sleep-bar-lbl">${DAYS[d.getDay()]}</div>
+    </div>`;
+  }).join('');
+
+  // Qualité
+  const qCounts = {};
+  data.forEach(e => { qCounts[e.quality] = (qCounts[e.quality]||0)+1; });
+  const qColors = {Excellente:'#16A34A',Bonne:'#3B82F6',Moyenne:'#F59E0B',Mauvaise:'#EF4444'};
+  renderBarChart('quality-bars', Object.entries(qCounts).map(([k,v])=>({name:k,val:v,formatted:v+' nuits'})), '#3B82F6');
+
+  
+}
+
+/* ===== INIT HABITS ===== */
+function initHabits() {
+  const data = getHabitData();
+  const TODAY = todayStr();
+  const todayLog = data.log[TODAY] || [];
+
+  document.getElementById('h-total').textContent = data.habits.length;
+  document.getElementById('h-today').textContent = todayLog.length;
+
+  // Total all-time completions
+  let totalDone = 0;
+  Object.values(data.log).forEach(arr => totalDone += arr.length);
+  document.getElementById('h-total-done').textContent = totalDone;
+
+  // Best streak
+  let bestStreak = 0;
+  const streaks = data.habits.map(h => { const s = getStreak(data, h.id); if (s > bestStreak) bestStreak = s; return {name: h.name, streak: s}; });
+  document.getElementById('h-best-streak').textContent = bestStreak ;
+
+  // Streak bars
+  renderBarChart('habit-streaks', streaks.map(s=>({name:s.name,val:s.streak,formatted:s.streak+'🔥'})), '#F59E0B');
+
+  // Taux de réussite 7j
+  const now = new Date();
+  const last7days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now);
+    d.setDate(now.getDate()-i);
+    last7days.push(getKey(d));
+  }
+  const rates = data.habits.map(h => {
+    const done = last7days.filter(k => (data.log[k]||[]).includes(h.id)).length;
+    return { name: h.name, val: done, formatted: done+'/7' };
+  });
+  renderBarChart('habit-rates', rates, '#7C3AED');
+}
+
+/* ===== INIT TASKS ===== */
+function initTasks() {
+  const taches = getTaches();
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const pending  = taches.filter(t => !t.fait);
+  const done     = taches.filter(t => t.fait);
+  const important = pending.filter(t => t.important);
+  const overdue  = pending.filter(t => t.date && new Date(t.date) < today);
+
+  document.getElementById('t-done').textContent = getTachesFaites();
+  document.getElementById('t-pending').textContent = pending.length;
+  document.getElementById('t-important').textContent = important.length;
+  document.getElementById('t-overdue').textContent = overdue.length;
+
+  // By category
+  const cats = {};
+  taches.forEach(t => { if (t.categorie) cats[t.categorie] = (cats[t.categorie]||0)+1; });
+  renderBarChart('cat-bars', Object.entries(cats).map(([k,v])=>({name:k,val:v})), '#2563EB');
+
+  // By duration
+  const durs = {};
+  taches.forEach(t => { if (t.duree) durs[t.duree] = (durs[t.duree]||0)+1; });
+  renderBarChart('dur-bars', Object.entries(durs).map(([k,v])=>({name:k,val:v})), '#0891B2');
+}
+
+/* ===== INIT TIMER ===== */
+function initTimer() {
+  const log = getTimerLog();
+
+  if (log.length === 0) {
+    document.getElementById('tm-total').textContent = '0h';
+    document.getElementById('tm-sessions').textContent = '0';
+    document.getElementById('tm-avg').textContent = '0m';
+    document.getElementById('tm-best-day').textContent = '0h';
+    document.getElementById('tm-this-week').textContent = '0h';
+    document.getElementById('timer-bars').innerHTML = '<div class="empty">Aucune session enregistrée</div>';
+    document.getElementById('timer-sessions-list').innerHTML = '<div class="empty">Lance le timer pour voir tes stats ici !</div>';
+    // Carte quand même
+    initTimerDept();
+    return;
+  }
+
+  const totalMin = log.reduce((a,b) => a + b.minutes, 0);
+  document.getElementById('tm-total').textContent = totalMin >= 60 ? fmtH(totalMin/60) : totalMin+'m';
+  document.getElementById('tm-sessions').textContent = log.length;
+  const avg = Math.round(totalMin / log.length);
+  document.getElementById('tm-avg').textContent = avg >= 60 ? fmtH(avg/60) : avg+'m';
+
+  // Par jour
+  const byDay = {};
+  log.forEach(s => {
+    const d = new Date(s.date);
+    const k = getKey(d);
+    byDay[k] = (byDay[k] || 0) + s.minutes;
+  });
+
+  // Meilleur jour
+  const bestDayMin = Math.max(...Object.values(byDay));
+  document.getElementById('tm-best-day').textContent = bestDayMin >= 60 ? fmtH(bestDayMin/60) : bestDayMin+'m';
+
+  // Cette semaine
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+  monday.setHours(0,0,0,0);
+  let weekMin = 0;
+  log.forEach(s => { if (new Date(s.date) >= monday) weekMin += s.minutes; });
+  document.getElementById('tm-this-week').textContent = weekMin >= 60 ? fmtH(weekMin/60) : weekMin+'m';
+
+  // Graphe 7 derniers jours
+  const last7 = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const k = getKey(d);
+    const DAYS = ['Di','Lu','Ma','Me','Je','Ve','Sa'];
+    last7.push({ label: DAYS[d.getDay()], min: byDay[k] || 0 });
+  }
+  const maxMin = Math.max(...last7.map(d => d.min), 1);
+  document.getElementById('timer-bars').innerHTML = last7.map(d => {
+    const pct = (d.min / maxMin * 100).toFixed(1);
+    const col = d.min >= 60 ? '#0891B2' : d.min >= 30 ? '#3B82F6' : d.min > 0 ? '#93C5FD' : '#E2E8F0';
+    return `<div class="sleep-bar-col">
+      <div class="sleep-bar-inner" style="height:${Math.max(pct,d.min>0?4:0)}%;background:${col}"></div>
+      <div class="sleep-bar-lbl">${d.label}</div>
+    </div>`;
+  }).join('');
+
+  // Sessions récentes (10 dernières)
+  const recent = [...log].reverse().slice(0, 10);
+  document.getElementById('timer-sessions-list').innerHTML = recent.map(s => {
+    const d = new Date(s.date);
+    const DAYS = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+    const dateStr = DAYS[d.getDay()] + ' ' + pad(d.getDate()) + '/' + pad(d.getMonth()+1);
+    const timeStr = pad(d.getHours()) + ':' + pad(d.getMinutes());
+    const col = s.minutes >= 60 ? '#0891B2' : s.minutes >= 30 ? '#3B82F6' : '#94A3B8';
+    return `<div class="score-row">
+      <div class="score-dot" style="background:${col}"></div>
+      <div class="score-name">${dateStr} <span style="color:var(--muted);font-size:0.7rem">${timeStr}</span></div>
+      <div class="score-num" style="color:${col};font-weight:700">${s.minutes >= 60 ? fmtH(s.minutes/60) : s.minutes+'m'}</div>
+    </div>`;
+  }).join('');
+
+  initTimerDept();
+}
+
+function initTimerDept() {
+  // Progression carte (depuis localStorage global du timer)
+  try {
+    const global = JSON.parse(localStorage.getItem('global') || '{}');
+    const depts = 101; // nombre total de départements dans ton fichier
+    const completed = (global.completed || []).length;
+    const current = global.deptIndex || 0;
+    const pct = Math.round((current / depts) * 100);
+    document.getElementById('tm-dept-pct').textContent = Math.min(pct, 100) + '%';
+  } catch(e) {}
+}
+
+/* ===== INIT ===== */
+initGlobal();
+initSleep();
+initHabits();
+initTasks();
+initTimer();
 </script>
+</body>
 </html>

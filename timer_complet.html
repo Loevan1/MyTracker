@@ -414,6 +414,9 @@ function loop() {
     saveXP(XP);
     saveDept(departments[state.deptIndex].num);
     setTimeout(completeDepartment, 1200);
+    const timerLog = JSON.parse(localStorage.getItem('timerLog') || '[]');
+timerLog.push({ date: new Date().toISOString(), minutes: parseFloat(timerInput.value) });
+localStorage.setItem('timerLog', JSON.stringify(timerLog));
     return;
   }
 
@@ -427,6 +430,9 @@ function loop() {
     XP+=5;
     saveXP(XP);
     saveDept(departments[state.deptIndex].num);
+    const timerLog = JSON.parse(localStorage.getItem('timerLog') || '[]');
+timerLog.push({ date: new Date().toISOString(), minutes: parseFloat(timerInput.value) });
+localStorage.setItem('timerLog', JSON.stringify(timerLog));
     return;
   }
 }

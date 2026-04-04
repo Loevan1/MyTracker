@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+   <style>
+*{
+ 
+    font-family:'Poppins', sans-serif; 
+    
+    margin: 0px;
+    
+}
+
+body{
+  background-color:#F1F5F9;
+  color: #1E293B;
+  padding-bottom: 60px;
+}
+h2,h3{
+    margin: 15px;
+}
+
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+
+a:visited {
+  color:#007bff
+}
+
+
+a:active {
+  color: red;
+}
+
+header{
+  background-color: #f0f8ff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-bottom: 5px solid #f8f8f9;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding-top: 10px;
+  color: white;
+  
+  box-sizing: border-box;
+}
+
+#icone{
+  width: 25px;
+  height: 25px;
+}
+
+#iconesommeil{
+   width: 30px;
+  height: 23px;
+  
+}
+#foot{
+  padding: 7px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border: rgb(190, 218, 241) 3px solid;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+    
+  </style>
+</head>
+<body>
+
+<header>
+  <h1><a href="index.html"></a>MyTracker</h1>
+  
+</header>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <input id="search" type="text" placeholder="Rechercher...">
+      <button id="btn-new">+ Nouvelle note</button>
+    </div>
+    <div id="note-list"></div>
+  </aside>
+
+  <section class="editor" id="editor-section">
+    <div class="no-note" id="no-note">
+      <div class="no-note-icon">📋</div>
+      <div>Sélectionne ou crée une note</div>
+    </div>
+    <div id="editor-content" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+      <div class="editor-bar">
+        <input id="note-title" type="text" placeholder="Titre…">
+        <div class="editor-bar-actions">
+          
+          <button class="btn-icon danger" id="btn-delete" title="Supprimer">✕</button>
+        </div>
+      </div>
+      <textarea id="note-body" placeholder="Commence à écrire…"></textarea>
+      <div class="status-bar">
+        <span id="save-status">✓ Sauvegardé</span>
+        <span id="word-count">0 mot</span>
+        <span id="char-count">0 car.</span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="toast"></div>
+<footer>
+            <div id="foot">
+            <a href="index.html"><img src="icones/home.png" id="icone"></a>
+            <a href="todolist.html"><img src="icones/tache.png" id="icone"></a>
+            <a href="habitudes.html"><img src="icones/habitudes.png" id="icone"></a>
+            <a href="sommeil.html"><img src="icones/sommeil.png" id="iconesommeil"></a>
+            <a href="timer_complet.html"><img src="icones/timer.png" id="icone"></a>
+            <a href="stats.html"><img src="icones/stats.png" id="icone"></a>
+            
+            </div>
+        </footer>
+<script>
+  const STORAGE_KEY = 'mytracker_notes';
+
+  let notes = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  let currentId = null;
+  let saveTimer = null;
+
+  // DOM
+  const noteList = document.getElementById('note-list');
+  const search = document.getElementById('search');
+  const btnNew = document.getElementById('btn-new');
+  const btnDelete = document.getElementById('btn-delete');
+  const btnCopy = document.getElementById('btn-copy');
+  const noteTitle = document.getElementById('note-title');
+  const noteBody = document.getElementById('note-body');
+  const saveStatus = document.getElementById('save-status');
+  const wordCount = document.getElementById('word-count');
+  const charCount = document.getElementById('char-count');
+  
+  const noNote = document.getElementById('no-note');
+  const editorContent = document.getElementById('editor-content');
+
+  /* ---- Utilities ---- */
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+  }
+
+  function formatDate(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    if (d.toDateString() === now.toDateString()) {
+      return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    }
+    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+  }
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function updateStats() {
+    const text = noteBody.value.trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    wordCount.textContent = words + (words <= 1 ? ' mot' : ' mots');
+    charCount.textContent = noteBody.value.length + ' car.';
+  }
+
+  function updateNoteCount(n) {
+    noteCount.textContent = n + (n <= 1 ? ' note' : ' notes');
+  }
+
+  /* ---- Render list ---- */
+  function renderList(filter = '') {
+    noteList.innerHTML = '';
+    const q = filter.toLowerCase();
+    const filtered = notes.filter(n =>
+      n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q)
+    );
+   
+    if (!filtered.length) {
+      noteList.innerHTML = `<div class="empty-state">${filter ? 'Aucun résultat' : 'Aucune note'}</div>`;
+      return;
+    }
+    filtered.sort((a, b) => b.updatedAt - a.updatedAt).forEach(n => {
+      const el = document.createElement('div');
+      el.className = 'note-item' + (n.id === currentId ? ' active' : '');
+      el.dataset.id = n.id;
+      el.innerHTML = `
+        <div class="note-item-date">${formatDate(n.updatedAt)}</div>
+        <div class="note-item-title">${n.title || 'Sans titre'}</div>
+        <div class="note-item-preview">${n.body.slice(0, 60) || '…'}</div>
+      `;
+      el.addEventListener('click', () => openNote(n.id));
+      noteList.appendChild(el);
+    });
+  }
+
+  /* ---- Open / close ---- */
+  function openNote(id) {
+    currentId = id;
+    const n = notes.find(x => x.id === id);
+    if (!n) return;
+    noteTitle.value = n.title;
+    noteBody.value = n.body;
+    noNote.style.display = 'none';
+    editorContent.style.display = 'flex';
+    updateStats();
+    saveStatus.textContent = '✓ Sauvegardé';
+    renderList(search.value);
+    noteBody.focus();
+  }
+
+  function closeEditor() {
+    currentId = null;
+    noNote.style.display = 'flex';
+    editorContent.style.display = 'none';
+    renderList(search.value);
+  }
+
+  /* ---- Create ---- */
+  btnNew.addEventListener('click', () => {
+    const n = { id: uid(), title: '', body: '', createdAt: Date.now(), updatedAt: Date.now() };
+    notes.unshift(n);
+    save();
+    openNote(n.id);
+  });
+
+  /* ---- Auto-save ---- */
+  function triggerSave() {
+    saveStatus.textContent = '● En cours…';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      const n = notes.find(x => x.id === currentId);
+      if (!n) return;
+      n.title = noteTitle.value;
+      n.body = noteBody.value;
+      n.updatedAt = Date.now();
+      save();
+      saveStatus.textContent = '✓ Sauvegardé';
+      renderList(search.value);
+    }, 600);
+  }
+
+  noteTitle.addEventListener('input', triggerSave);
+  noteBody.addEventListener('input', () => { triggerSave(); updateStats(); });
+
+  /* ---- Delete ---- */
+  btnDelete.addEventListener('click', () => {
+    if (!currentId) return;
+    if (!confirm('Supprimer cette note ?')) return;
+    notes = notes.filter(x => x.id !== currentId);
+    save();
+    closeEditor();
+    showToast('Note supprimée');
+  });
+
+
+
+  /* ---- Search ---- */
+  search.addEventListener('input', () => renderList(search.value));
+
+  
+
+  /* ---- Init ---- */
+  renderList();
+</script>
+</body>
+</html>

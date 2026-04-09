@@ -148,11 +148,23 @@ function creer_tache() {
   afficherTaches();
 }
 
+
+function saveTaskStats(tache) {
+  let stats = {};
+  try { stats = JSON.parse(localStorage.getItem('taskStats') || '{}'); } catch(e) {}
+  if (!stats.categories) stats.categories = {};
+  if (!stats.durations)  stats.durations  = {};
+  if (tache.categorie) stats.categories[tache.categorie] = (stats.categories[tache.categorie] || 0) + 1;
+  if (tache.duree)     stats.durations[tache.duree]      = (stats.durations[tache.duree]      || 0) + 1;
+  localStorage.setItem('taskStats', JSON.stringify(stats));
+}
+
 // SUPPRESSION 
 function supprimerTache(id) {
   const taches = getTaches();
   const index = taches.findIndex(tache => tache.id === id);
   if (index !== -1) {
+    saveTaskStats(taches[index]);
     taches.splice(index, 1);
     saveTaches(taches);
     afficherTaches();
@@ -167,6 +179,7 @@ function faitTache(id) {
   if (index !== -1) {
     taches[index].fait = true;
     saveTaches(taches);
+    saveTaskStats(taches[index]);
     XP = getXP()
     XP+=5;
     saveXP(XP);

@@ -552,16 +552,15 @@ function getStreak(data, habitId) {
 }
 
 /* ===== RENDER BARS ===== */
-function renderBarChart(containerId, items, color) {
-  // items: [{name, val, formatted}]
+function renderBarChart(containerId, items, color, forceMax) {
   const el = document.getElementById(containerId);
   if (!el) return;
   if (items.length === 0) { el.innerHTML = '<div class="empty">Aucune donnée</div>'; return; }
-  const max = Math.max(...items.map(i => i.val), 1);
+  const max = forceMax !== undefined ? forceMax : Math.max(...items.map(i => i.val), 1);
   el.innerHTML = items.map(item => `
     <div class="bar-row">
       <div class="bar-name" title="${item.name}">${item.name}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${(item.val/max*100).toFixed(1)}%;background:${color}"></div></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.min(item.val/max*100,100).toFixed(1)}%;background:${color}"></div></div>
       <div class="bar-val">${item.formatted || item.val}</div>
     </div>
   `).join('');
@@ -599,13 +598,13 @@ function initGlobal() {
   document.getElementById('g-habits-today').textContent = todayLog.length+'/'+hData.habits.length;
 
 
-  // a changer
 
 
-  // Best streak
-  let bestStreak = 0;
-  hData.habits.forEach(h => { const s = getStreak(hData, h.id); if (s > bestStreak) bestStreak = s; });
-  document.getElementById('g-best-streak').textContent = bestStreak ;
+
+  // streak
+  let Streak = localStorage.getItem('streak_count');
+  
+  document.getElementById('g-best-streak').textContent = Streak ;
 
 
 
@@ -687,8 +686,8 @@ function initSleep() {
   const qCounts = {};
   data.forEach(e => { qCounts[e.quality] = (qCounts[e.quality]||0)+1; });
   const qColors = {Excellente:'#16A34A',Bonne:'#3B82F6',Moyenne:'#F59E0B',Mauvaise:'#EF4444'};
-  renderBarChart('quality-bars', Object.entries(qCounts).map(([k,v])=>({name:k,val:v,formatted:v+' nuits'})), '#3B82F6');
-
+  const qTotal = data.length;
+  renderBarChart('quality-bars', Object.entries(qCounts).map(([k,v])=>({name:k,val:v,formatted:v+' nuits'})), '#3B82F6', qTotal);
   
 }
 
@@ -725,15 +724,15 @@ function initHabits() {
   Object.values(data.log).forEach(arr => totalDone += arr.length);
   document.getElementById('h-total-done').textContent = totalDone;
 
-   // Meilleure streak historique (max atteint, même si remise à 0)
+  // Meilleure streak historique (max atteint, même si remise à 0)
   let bestStreak = 0;
   const streaks = data.habits.map(h => {
     const maxS = getMaxStreak(data, h.id);
     if (maxS > bestStreak) bestStreak = maxS;
     return { name: h.name, streak: maxS };
   });
-  document.getElementById('h-best-streak').textContent = bestStreak ;
-
+  document.getElementById('h-best-streak').textContent = bestStreak;
+ 
   // Streak bars — barre sur 7j de référence, valeur affichée en jours
   const refMax = Math.max(...streaks.map(s => s.streak), 7);
   document.getElementById('habit-streaks').innerHTML = streaks.length === 0
@@ -757,8 +756,7 @@ function initHabits() {
     const done = last7days.filter(k => (data.log[k]||[]).includes(h.id)).length;
     return { name: h.name, val: done, formatted: done+'/7' };
   });
-  renderBarChart('habit-rates', rates, '#7C3AED');
-
+  renderBarChart('habit-rates', rates, '#7C3AED', 7);
 }
 
 /* ===== INIT TASKS ===== */
@@ -791,8 +789,10 @@ function initTasks() {
     if (t.duree)     allDurs[t.duree]     = (allDurs[t.duree]     || 0) + 1;
   });
  
-  renderBarChart('cat-bars', Object.entries(allCats).map(([k,v]) => ({ name: k, val: v })), '#2563EB');
-  renderBarChart('dur-bars', Object.entries(allDurs).map(([k,v]) => ({ name: k, val: v })), '#0891B2');
+  const totalTaches = Object.values(allCats).reduce((a,b)=>a+b, 0) || 1;
+  const totalDurs = Object.values(allDurs).reduce((a,b)=>a+b, 0) || 1;
+  renderBarChart('cat-bars', Object.entries(allCats).map(([k,v]) => ({ name: k, val: v })), '#2563EB', totalTaches);
+  renderBarChart('dur-bars', Object.entries(allDurs).map(([k,v]) => ({ name: k, val: v })), '#0891B2', totalDurs);
 }
 
 /* ===== INIT TIMER ===== */

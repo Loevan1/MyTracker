@@ -38,7 +38,7 @@ header{
 /* TABS */
 .tabs {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   padding: 10px 12px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -48,10 +48,10 @@ header{
 }
 .tab {
   flex: 1;
-  padding: 6px 0;
+  padding: 6px 5px;
   border: none;
   border-radius: 8px;
-  font-size: 0.72rem;
+  font-size: 0.70rem;
   font-weight: 600;
   cursor: pointer;
   background: var(--border);
@@ -217,6 +217,46 @@ a:visited { color: #007bff; }
 }
 .record-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .record-title { font-size: 0.85rem; font-weight: 600; }
+/* RECAP */
+.period-selector {
+  display: flex; gap: 8px; margin-bottom: 14px; align-items: center;
+}
+.period-selector select {
+  flex: 1; background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 7px 10px; font-size: 0.8rem; font-weight: 500;
+  color: var(--text); font-family: 'Poppins', sans-serif;
+}
+.recap-block {
+  background: var(--surface); border-radius: 14px; padding: 14px ; margin-top: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 12px;
+}
+.recap-block-title {
+  font-size: 0.78rem; font-weight: 600; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.recap-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.8rem;
+}
+.recap-row:last-child { border-bottom: none; }
+.recap-row-val { font-family: 'DM Mono', monospace; font-size: 0.78rem; font-weight: 500; }
+.export-btn {
+  width: 100%; padding: 13px; border: none; border-radius: 12px;
+  background: var(--blue); color: white; font-size: 0.85rem; font-weight: 600;
+  font-family: 'Poppins', sans-serif; cursor: pointer; margin-bottom: 10px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background .15s;
+}
+.export-btn:hover { background: #1E40AF; }
+.export-btn.secondary {
+  background: var(--surface); color: var(--text);
+  border: 1.5px solid var(--border);
+}
+.export-btn.secondary:hover { background: var(--border); }
+.month-mini-bar { display: flex; align-items: flex-end; gap: 3px; height: 50px; margin-top: 10px; }
+.month-mini-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.month-mini-inner { width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; }
+.month-mini-lbl { font-size: 0.5rem; color: var(--muted);}
 </style>
 </head>
 <body>
@@ -229,6 +269,7 @@ a:visited { color: #007bff; }
   <button class="tab" onclick="showTab('habitudes')">Habitudes</button>
   <button class="tab" onclick="showTab('taches')">Tâches</button>
   <button class="tab" onclick="showTab('timer')">Timer</button>
+  <button class="tab" onclick="showTab('recap')">Récap</button>
 </div>
 
 <!-- ===== GLOBAL ===== -->
@@ -447,6 +488,26 @@ a:visited { color: #007bff; }
   <div class="sec-title">Sessions récentes</div>
   <div id="timer-sessions-list"></div>
 
+</div>
+<!-- ===== RÉCAP ===== -->
+<div class="section" id="tab-recap">
+ 
+  <div class="period-selector">
+    <select id="recap-type" onchange="renderRecap()">
+      <option value="month">Mois</option>
+      <option value="year">Année</option>
+    </select>
+    <select id="recap-period" onchange="renderRecap()"></select>
+  </div>
+ 
+  <div id="recap-content"></div>
+ 
+  <div class="sec-title">Export</div>
+  <button class="export-btn" onclick="exportJSON()">⬇ Exporter toutes les données (JSON)</button>
+  <button class="export-btn secondary" onclick="exportJSON('sleep')">🌙 Export sommeil uniquement</button>
+  <button class="export-btn secondary" onclick="exportJSON('habits')">🎯 Export habitudes uniquement</button>
+  <button class="export-btn secondary" onclick="exportJSON('timer')">⏱ Export timer uniquement</button>
+ 
 </div>
 
 <footer>
@@ -890,12 +951,179 @@ function initTimerDept() {
   } catch(e) {}
 }
 
+/* ===== RÉCAP ===== */
+function initRecapSelector() {
+  const typeEl = document.getElementById('recap-type');
+  const periodEl = document.getElementById('recap-period');
+  const now = new Date();
+  const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+ 
+  function fillPeriods() {
+    periodEl.innerHTML = '';
+    if (typeEl.value === 'month') {
+      // 24 derniers mois
+      for (let i = 0; i < 13; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const val = d.getFullYear() + '-' + pad(d.getMonth()+1);
+        const lbl = MONTHS_FR[d.getMonth()] + ' ' + d.getFullYear();
+        periodEl.innerHTML += `<option value="${val}">${lbl}</option>`;
+      }
+    } else {
+      for (let y = now.getFullYear(); y >= 2026; y--) {
+        periodEl.innerHTML += `<option value="${y}">${y}</option>`;
+      }
+    }
+  }
+  typeEl.addEventListener('change', () => { fillPeriods(); renderRecap(); });
+  fillPeriods();
+}
+ 
+function renderRecap() {
+  const type = document.getElementById('recap-type').value;
+  const period = document.getElementById('recap-period').value;
+  const el = document.getElementById('recap-content');
+ 
+  const sleepData = getSleepData();
+  const habitData = getHabitData();
+  const timerLog = getTimerLog();
+  const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+ 
+  function inPeriod(dateStr) {
+    if (type === 'month') return dateStr && dateStr.startsWith(period);
+    return dateStr && dateStr.startsWith(period);
+  }
+ 
+  // ---- SOMMEIL ----
+  const sleepFiltered = sleepData.filter(e => inPeriod((e.start||'').slice(0,type==='month'?7:4)));
+  const sleepHours = sleepFiltered.map(e => e.hours);
+  const sleepAvg = sleepHours.length ? sleepHours.reduce((a,b)=>a+b,0)/sleepHours.length : 0;
+  const sleepScores = sleepFiltered.map(calcScore);
+  const sleepScoreAvg = sleepScores.length ? Math.round(sleepScores.reduce((a,b)=>a+b,0)/sleepScores.length) : 0;
+ 
+  // ---- HABITUDES ----
+  let habitDays = 0, habitTotal = 0, habitDone = 0;
+  Object.keys(habitData.log).forEach(k => {
+    if (!inPeriod(k.slice(0, type==='month'?7:4))) return;
+    habitDays++;
+    habitTotal += habitData.habits.length;
+    habitDone += (habitData.log[k]||[]).length;
+  });
+  const habitRate = habitTotal > 0 ? Math.round(habitDone/habitTotal*100) : 0;
+ 
+  // ---- TIMER ----
+  const timerFiltered = timerLog.filter(s => inPeriod((s.date||'').slice(0,type==='month'?7:4)));
+  const timerMin = timerFiltered.reduce((a,b)=>a+b.minutes, 0);
+  const timerSessions = timerFiltered.length;
+ 
+  // ---- LABEL ----
+  let label = period;
+  if (type === 'month') {
+    const [y, m] = period.split('-');
+    label = MONTHS_FR[parseInt(m)-1] + ' ' + y;
+  }
+ 
+  // ---- MINI BAR: sous-périodes ----
+  let miniBar = '';
+  if (type === 'year') {
+    // par mois
+    const monthMins = Array(12).fill(0);
+    timerLog.forEach(s => {
+      if (!s.date || !s.date.startsWith(period)) return;
+      const m = parseInt(s.date.slice(5,7)) - 1;
+      monthMins[m] += s.minutes;
+    });
+    const maxM = Math.max(...monthMins, 1);
+    const ML = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+    miniBar = `<div class="month-mini-bar">${monthMins.map((v,i)=>`
+      <div class="month-mini-col">
+        <div class="month-mini-inner" style="height:${Math.max(v/maxM*46,v>0?3:0).toFixed(1)}px;background:var(--cyan)"></div>
+        <div class="month-mini-lbl">${ML[i]}</div>
+      </div>`).join('')}</div>`;
+  } else {
+    // par semaine (4 semaines)
+    const [y,m] = period.split('-').map(Number);
+    const weekMins = [0,0,0,0,0];
+    timerLog.forEach(s => {
+      if (!s.date || !s.date.startsWith(period)) return;
+      const day = parseInt(s.date.slice(8,10));
+      const w = Math.min(Math.floor((day-1)/7), 4);
+      weekMins[w] += s.minutes;
+    });
+    const maxW = Math.max(...weekMins, 1);
+    miniBar = `<div class="month-mini-bar">${weekMins.map((v,i)=>`
+      <div class="month-mini-col">
+        <div class="month-mini-inner" style="height:${Math.max(v/maxW*40,v>0?3:0).toFixed(1)}px;background:var(--cyan);"></div>
+        <div class="month-mini-lbl">S${i+1}</div>
+      </div>`).join('')}</div>`;
+  }
+ 
+  el.innerHTML = `
+    <div class="recap-block">
+      <div class="recap-block-title">😴 Sommeil — ${label}</div>
+      ${sleepFiltered.length === 0 ? '<div class="empty">Aucune donnée</div>' : `
+      <div class="recap-row"><span>Nuits enregistrées</span><span class="recap-row-val" style="color:var(--blue)">${sleepFiltered.length}</span></div>
+      <div class="recap-row"><span>Durée moyenne</span><span class="recap-row-val" style="color:var(--green)">${fmtH(sleepAvg)}</span></div>
+      <div class="recap-row"><span>Meilleure nuit</span><span class="recap-row-val" style="color:var(--green)">${fmtH(Math.max(...sleepHours))}</span></div>
+      <div class="recap-row"><span>Nuit la plus courte</span><span class="recap-row-val" style="color:var(--red)">${fmtH(Math.min(...sleepHours))}</span></div>
+      <div class="recap-row"><span>Score moyen</span><span class="recap-row-val" style="color:${scoreColor(sleepScoreAvg)}">${sleepScoreAvg}/100</span></div>
+      `}
+    </div>
+ 
+    <div class="recap-block">
+      <div class="recap-block-title">🎯 Habitudes — ${label}</div>
+      ${habitDays === 0 ? '<div class="empty">Aucune donnée</div>' : `
+      <div class="recap-row"><span>Jours avec activité</span><span class="recap-row-val" style="color:var(--blue)">${habitDays}</span></div>
+      <div class="recap-row"><span>Complétions totales</span><span class="recap-row-val" style="color:var(--green)">${habitDone}</span></div>
+      <div class="recap-row"><span>Taux de réussite</span><span class="recap-row-val" style="color:${habitRate>=70?'var(--green)':habitRate>=40?'var(--orange)':'var(--red)'}">${habitRate}%</span></div>
+      `}
+    </div>
+ 
+    <div class="recap-block">
+      <div class="recap-block-title">⏱️ Travail — ${label}</div>
+      ${timerSessions === 0 ? '<div class="empty">Aucune session enregistrée</div>' : `
+      <div class="recap-row"><span>Sessions</span><span class="recap-row-val" style="color:var(--blue)">${timerSessions}</span></div>
+      <div class="recap-row"><span>Temps total</span><span class="recap-row-val" style="color:var(--cyan)">${timerMin>=60?fmtH(timerMin/60):timerMin+'m'}</span></div>
+      <div class="recap-row"><span>Durée moyenne/session</span><span class="recap-row-val" style="color:var(--cyan)">${timerSessions>0?(timerMin/timerSessions>=60?fmtH(timerMin/timerSessions/60):Math.round(timerMin/timerSessions)+'m'):'--'}</span></div>
+      ${miniBar}
+      `}
+    </div>
+  `;
+}
+ 
+/* ===== EXPORT JSON ===== */
+function exportJSON(scope) {
+  let data = {};
+  const keys = {
+    all: ['sleep_entries_v2','habitData','taches','tachesFaites','timerLog','taskStats','XP','global'],
+    sleep: ['sleep_entries_v2'],
+    habits: ['habitData'],
+    timer: ['timerLog','global']
+  };
+  const toExport = keys[scope || 'all'];
+  toExport.forEach(k => {
+    const v = localStorage.getItem(k);
+    if (v !== null) {
+      try { data[k] = JSON.parse(v); } catch(e) { data[k] = v; }
+    }
+  });
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const now = new Date();
+  const suffix = scope && scope !== 'all' ? '_' + scope : '';
+  a.href = url;
+  a.download = `mytracker${suffix}_${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 /* ===== INIT ===== */
 initGlobal();
 initSleep();
 initHabits();
 initTasks();
 initTimer();
+initRecapSelector();
+renderRecap();
 </script>
 </body>
 </html>

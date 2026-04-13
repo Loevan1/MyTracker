@@ -401,7 +401,7 @@ a:visited { color: #007bff; }
     </div>
   </div>
 
-  <div class="sec-title">Streak par habitude</div>
+  <div class="sec-title">Streak max par habitude</div>
   <div class="bar-chart" id="habit-streaks"></div>
 
   <div class="sec-title">Taux de réussite (7j)</div>
@@ -1036,7 +1036,7 @@ function renderRecap() {
     const ML = ['J','F','M','A','M','J','J','A','S','O','N','D'];
     miniBar = `<div class="month-mini-bar">${monthMins.map((v,i)=>`
       <div class="month-mini-col">
-        <div class="month-mini-inner" style="height:${Math.max(v/maxM*46,v>0?3:0).toFixed(1)}px;background:var(--cyan)"></div>
+        <div class="month-mini-inner" style="height:${Math.max(v/maxM*40,v>0?3:0).toFixed(1)}px;background:var(--cyan)"></div>
         <div class="month-mini-lbl">${ML[i]}</div>
       </div>`).join('')}</div>`;
   } else {

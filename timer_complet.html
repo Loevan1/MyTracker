@@ -172,11 +172,68 @@ header{
 <script>
 /* ===================== DONNÉES ===================== */
 
+
+// deso j'ai reorganiser la france et les numeros mais tkt
 const departments = [
   { num:"01", name:"Ain" }, { num:"02", name:"Aisne" },
   { num:"03", name:"Allier" }, { num:"04", name:"Alpes-de-Haute-Provence" },
   { num:"05", name:"Hautes-Alpes" }, { num:"06", name:"Alpes-Maritimes" },
-  
+  { num:"07", name:"Ardèche" }, { num:"08", name:"Ardennes" },
+  { num:"09", name:"Ariège" }, { num:"10", name:"Aube" },
+  { num:"11", name:"Aude" }, { num:"12", name:"Aveyron" },
+  { num:"13", name:"Bouches-du-Rhône" }, { num:"14", name:"Calvados" },
+  { num:"15", name:"Cantal" }, { num:"16", name:"Charente" },
+  { num:"17", name:"Charente-Maritime" }, { num:"18", name:"Cher" },
+  { num:"19", name:"Corrèze" },
+
+  { num:"20", name:"Corse-du-Sud" },
+  { num:"21", name:"Haute-Corse" },
+
+  { num:"22", name:"Côte-d'Or" },
+  { num:"23", name:"Côtes-d'Armor" }, { num:"24", name:"Creuse" },
+  { num:"25", name:"Dordogne" }, { num:"26", name:"Doubs" },
+  { num:"27", name:"Drôme" }, { num:"28", name:"Eure" },
+  { num:"29", name:"Eure-et-Loir" }, { num:"30", name:"Finistère" },
+  { num:"31", name:"Gard" }, { num:"32", name:"Haute-Garonne" },
+  { num:"33", name:"Gers" }, { num:"34", name:"Gironde" },
+  { num:"35", name:"Hérault" }, { num:"36", name:"Ille-et-Vilaine" },
+  { num:"37", name:"Indre" }, { num:"38", name:"Indre-et-Loire" },
+  { num:"39", name:"Isère" }, { num:"40", name:"Jura" },
+  { num:"41", name:"Landes" }, { num:"42", name:"Loir-et-Cher" },
+  { num:"43", name:"Loire" }, { num:"44", name:"Haute-Loire" },
+  { num:"45", name:"Loire-Atlantique" }, { num:"46", name:"Loiret" },
+  { num:"47", name:"Lot" }, { num:"48", name:"Lot-et-Garonne" },
+  { num:"49", name:"Lozère" }, { num:"50", name:"Maine-et-Loire" },
+  { num:"51", name:"Manche" }, { num:"52", name:"Marne" },
+  { num:"53", name:"Haute-Marne" }, { num:"54", name:"Mayenne" },
+  { num:"55", name:"Meurthe-et-Moselle" }, { num:"56", name:"Meuse" },
+  { num:"57", name:"Morbihan" }, { num:"58", name:"Moselle" },
+  { num:"59", name:"Nièvre" }, { num:"60", name:"Nord" },
+  { num:"61", name:"Oise" }, { num:"62", name:"Orne" },
+  { num:"63", name:"Pas-de-Calais" }, { num:"64", name:"Puy-de-Dôme" },
+  { num:"65", name:"Pyrénées-Atlantiques" }, { num:"66", name:"Hautes-Pyrénées" },
+  { num:"67", name:"Pyrénées-Orientales" }, { num:"68", name:"Bas-Rhin" },
+  { num:"69", name:"Haut-Rhin" }, { num:"70", name:"Rhône" },
+  { num:"71", name:"Haute-Saône" }, { num:"72", name:"Saône-et-Loire" },
+  { num:"73", name:"Sarthe" }, { num:"74", name:"Savoie" },
+  { num:"75", name:"Haute-Savoie" }, { num:"76", name:"Paris" },
+  { num:"77", name:"Seine-Maritime" }, { num:"78", name:"Seine-et-Marne" },
+  { num:"79", name:"Yvelines" }, { num:"80", name:"Deux-Sèvres" },
+  { num:"81", name:"Somme" }, { num:"82", name:"Tarn" },
+  { num:"83", name:"Tarn-et-Garonne" }, { num:"84", name:"Var" },
+  { num:"85", name:"Vaucluse" }, { num:"86", name:"Vendée" },
+  { num:"87", name:"Vienne" }, { num:"88", name:"Haute-Vienne" },
+  { num:"89", name:"Vosges" }, { num:"90", name:"Yonne" },
+  { num:"91", name:"Territoire de Belfort" }, { num:"92", name:"Essonne" },
+  { num:"93", name:"Hauts-de-Seine" }, { num:"94", name:"Seine-Saint-Denis" },
+  { num:"95", name:"Val-de-Marne" }, { num:"96", name:"Val-d'Oise" },
+
+  // Outre-mer custom
+  { num:"97", name:"Guadeloupe" },
+  { num:"98", name:"Martinique" },
+  { num:"99", name:"Guyane" },
+  { num:"100", name:"La Réunion" },
+  { num:"101", name:"Mayotte" }
 ];
 
 const BLOCK_SIZE = 1;

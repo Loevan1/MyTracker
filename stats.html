@@ -888,8 +888,29 @@ function initTimer() {
   });
 
   // Meilleur jour
-  const bestDayMin = Math.max(...Object.values(byDay));
-  document.getElementById('tm-best-day').textContent = bestDayMin >= 60 ? fmtH(bestDayMin/60) : bestDayMin+'m';
+  let bestDayMin = 0;
+  let bestDayDate = "";
+
+  for (const [date, minutes] of Object.entries(byDay)) {
+    if (minutes > bestDayMin) {
+      bestDayMin = minutes;
+      bestDayDate = date;
+    }
+  }
+
+  const bestDayValEl = document.getElementById('tm-best-day');
+  if (bestDayMin > 0) {
+    // Formater la date (ex: 15/04)
+    const dParts = bestDayDate.split('-');
+    const formattedDate = dParts[2] + '/' + dParts[1];
+    
+    const displayTime = bestDayMin >= 60 ? fmtH(bestDayMin/60) : bestDayMin+'m';
+    
+    // Affichage sur la même ligne avec un style plus petit pour la date
+    bestDayValEl.innerHTML = `${displayTime} <span style="font-size: 0.7rem; font-weight: 400; color: var(--muted); margin-left: 4px;">(${formattedDate})</span>`;
+  } else {
+    bestDayValEl.textContent = '0h';
+  }
 
   // Cette semaine
   const now = new Date();
@@ -1010,11 +1031,52 @@ function renderRecap() {
   });
   const habitRate = habitTotal > 0 ? Math.round(habitDone/habitTotal*100) : 0;
  
+// ---- TIMER ----
   // ---- TIMER ----
   const timerFiltered = timerLog.filter(s => inPeriod((s.date||'').slice(0,type==='month'?7:4)));
   const timerMin = timerFiltered.reduce((a,b)=>a+b.minutes, 0);
   const timerSessions = timerFiltered.length;
- 
+
+  let bestMoment = "Aucune donnée";
+  if (timerFiltered.length > 0) {
+    const dayStats = {}; 
+    const hourStats = {};
+    const DAYS_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+
+    timerFiltered.forEach(s => {
+      const d = new Date(s.date);
+      const dayName = DAYS_FR[d.getDay()];
+      const hourName = d.getHours() + 'h';
+      
+      // Stats par Jour
+      if (!dayStats[dayName]) dayStats[dayName] = { total: 0, occurrences: new Set() };
+      dayStats[dayName].total += s.minutes;
+      dayStats[dayName].occurrences.add(s.date);
+
+      // Stats par Heure (on compte combien de fois cette heure apparaît dans les sessions)
+      if (!hourStats[hourName]) hourStats[hourName] = { total: 0, count: 0 };
+      hourStats[hourName].total += s.minutes;
+      hourStats[hourName].count++;
+    });
+
+    // Calcul du jour gagnant (moyenne par jour de semaine)
+    let maxDayAvg = 0;
+    let bestDay = "";
+    for (const [day, data] of Object.entries(dayStats)) {
+      const avg = data.total / data.occurrences.size;
+      if (avg > maxDayAvg) { maxDayAvg = avg; bestDay = day; }
+    }
+
+    // Calcul de l'heure gagnante (moyenne par créneau)
+    let maxHourAvg = 0;
+    let bestHour = "";
+    for (const [hour, data] of Object.entries(hourStats)) {
+      const avg = data.total / data.count;
+      if (avg > maxHourAvg) { maxHourAvg = avg; bestHour = hour; }
+    }
+
+    bestMoment = `${bestDay} vers ${bestHour}`;
+  }
   // ---- LABEL ----
   let label = period;
   if (type === 'month') {
@@ -1083,8 +1145,11 @@ function renderRecap() {
       ${timerSessions === 0 ? '<div class="empty">Aucune session enregistrée</div>' : `
       <div class="recap-row"><span>Sessions</span><span class="recap-row-val" style="color:var(--blue)">${timerSessions}</span></div>
       <div class="recap-row"><span>Temps total</span><span class="recap-row-val" style="color:var(--cyan)">${timerMin>=60?fmtH(timerMin/60):timerMin+'m'}</span></div>
-      <div class="recap-row"><span>Durée moyenne/session</span><span class="recap-row-val" style="color:var(--cyan)">${timerSessions>0?(timerMin/timerSessions>=60?fmtH(timerMin/timerSessions/60):Math.round(timerMin/timerSessions)+'m'):'--'}</span></div>
-      ${miniBar}
+      <div class="recap-row"><span>Moyenne/session</span><span class="recap-row-val" style="color:var(--cyan)">${timerSessions>0?(timerMin/timerSessions>=60?fmtH(timerMin/timerSessions/60):Math.round(timerMin/timerSessions)+'m'):'--'}</span></div>
+      <div class="recap-row" >
+  <span>Pic de productivité</span>
+  <span class="recap-row-val" style="color:var(--purple); font-weight:600;">${bestMoment}</span>
+</div>
       `}
     </div>
   `;

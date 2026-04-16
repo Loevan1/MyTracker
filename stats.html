@@ -507,6 +507,7 @@ a:visited { color: #007bff; }
   <button class="export-btn secondary" onclick="exportJSON('sleep')">🌙 Export sommeil uniquement</button>
   <button class="export-btn secondary" onclick="exportJSON('habits')">🎯 Export habitudes uniquement</button>
   <button class="export-btn secondary" onclick="exportJSON('timer')">⏱ Export timer uniquement</button>
+  <button class="export-btn secondary" onclick="exportJSON('notes')">📝 Export notes uniquement</button>
  
 </div>
 
@@ -1159,10 +1160,11 @@ function renderRecap() {
 function exportJSON(scope) {
   let data = {};
   const keys = {
-    all: ['sleep_entries_v2','habitData','taches','tachesFaites','timerLog','taskStats','XP','global'],
+    all: ['sleep_entries_v2','habitData','taches','tachesFaites','timerLog','taskStats','XP','global','mytracker_notes'],
     sleep: ['sleep_entries_v2'],
     habits: ['habitData'],
-    timer: ['timerLog','global']
+    timer: ['timerLog','global'],
+    notes: ['mytracker_notes']
   };
   const toExport = keys[scope || 'all'];
   toExport.forEach(k => {
@@ -1181,7 +1183,7 @@ function exportJSON(scope) {
   a.click();
   URL.revokeObjectURL(url);
 }
-/* ===== INIT ===== */
+/*== INIT ===== */
 initGlobal();
 initSleep();
 initHabits();

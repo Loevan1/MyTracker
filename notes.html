@@ -29,6 +29,26 @@
 
         h1 a { text-decoration: none; color: inherit; }
 
+        a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+
+a:visited {
+  color:#007bff
+}
+
+
+a:active {
+  color: #0056b3;
+}
+
         .container { padding: 0 20px; }
 
         .note-form {
@@ -186,7 +206,7 @@ h2{
 .side-menu {
     position: fixed;
     bottom: -100%; /* Caché en bas */
-    right: 10px;
+    right: 15px;
     background: white;
     border-radius: 20px;
     transition: bottom 0.3s ease;
@@ -196,7 +216,7 @@ h2{
 }
 
 .side-menu.active {
-    bottom: 5px; /* Apparaît en remontant */
+    bottom: 15px; /* Apparaît en remontant */
 }
 
 .menu-header {
@@ -206,8 +226,8 @@ h2{
     margin-bottom: 20px;
     border-bottom: 1px solid #F1F5F9;
     padding-bottom: 10px;
+    color: #16A34A;
 }
-
 .close-btn {
     background: none;
     border: none;
@@ -246,7 +266,7 @@ h2{
 </head>
 <body>
 
-    <header><h1><a href="index.html">MyTracker</a></h1></header>
+    <header><h1>MyTracker</h1></header>
 
     <div class="container">
         

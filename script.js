@@ -191,6 +191,19 @@ function faitTache(id) {
   }
 }
 
+function toggleMenu() {
+    const menu = document.getElementById('moreMenu');
+    const overlay = document.getElementById('overlay');
+    
+    if (menu.classList.contains('active')) {
+        menu.classList.remove('active');
+        overlay.style.display = 'none';
+    } else {
+        menu.classList.add('active');
+        overlay.style.display = 'block';
+    }
+}
+
 // intitialistaion 
 document.addEventListener("DOMContentLoaded", afficherTaches);
 

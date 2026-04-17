@@ -45,17 +45,42 @@
      
 
         <footer>
-           <div id="foot">
-            <a href="index.html"><img src="icones/home.png" id="icone"></a>
-            <a href="todolist.html"><img src="icones/tache.png" id="icone"></a>
-            <a href="habitudes.html"><img src="icones/habitudes.png" id="icone"></a>
-            <a href="sommeil.html"><img src="icones/sommeil.png" id="iconesommeil"></a>
-            <a href="timer_complet.html"><img src="icones/timer.png" id="icone"></a>
-            <a href="stats.html"><img src="icones/stats.png" id="icone"></a>
+            <div id="foot">
+            <a href="index.html"><img src="icones/home1.png" id="icone"></a>
+            <a href="todolist.html"><img src="icones/taches2.png" id="icone"></a>
+            <a href="habitudes.html"><img src="icones/habitudes2.png" id="icone"></a>
+            <a href="sommeil.html"><img src="icones/sommeil1.png" id="icone"></a>
+            <a href="timer_complet.html"><img src="icones/timer1.png" id="icone"></a>
+            
+            <a href="javascript:void(0)" onclick="toggleMenu()"><img src="icones/nav1.png" id="icone"></a>
             
             </div>
-        
         </footer>
+    
+<div id="moreMenu" class="side-menu">
+    <div class="menu-header">
+        <h3>Plus d'outils</h3>
+        <button onclick="toggleMenu()" class="close-btn">✕</button>
+    </div>
+    <div class="menu-content">
+        <a href="notes.html" class="menu-item">
+            <span class="icon"><img src="icones/notes1.png" id="icone"></span>
+            <div class="text">
+                <strong>Notes</strong>
+                
+            </div>
+        </a>
+        <a href="stats.html" class="menu-item">
+            <span class="icon"><img src="icones/stats1.png" id="icone"></span>
+            <div class="text">
+                <strong>Statistiques</strong>
+                
+            </div>
+        </a>
+        </div>
+</div>
+
+<div id="overlay" onclick="toggleMenu()"></div>
 
 <script src="script.js"></script>
 </body>

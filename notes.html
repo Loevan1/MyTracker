@@ -187,6 +187,67 @@ h2{
   justify-content: center;
   margin-bottom: 15px;
 }
+
+/* Panneau latéral du menu */
+.side-menu {
+    position: fixed;
+    bottom: -100%; /* Caché en bas */
+    right: 10px;
+    background: white;
+    border-radius: 20px;
+    transition: bottom 0.3s ease;
+    z-index: 2000;
+    padding: 20px;
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+}
+
+.side-menu.active {
+    bottom: 5px; /* Apparaît en remontant */
+}
+
+.menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #F1F5F9;
+    padding-bottom: 10px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #64748B;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    text-decoration: none;
+    color: #1E293B;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    transition: background 0.2s;
+}
+
+.menu-item:active { background: #F1F5F9; }
+
+.menu-item .icon { font-size: 24px; }
+.menu-item strong { display: block; font-size: 1rem; }
+.menu-item p { font-size: 0.75rem; color: #64748B; margin: 0; }
+
+/* Fond sombre derrière le menu */
+#overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    z-index: 1500;
+}
     </style>
 </head>
 <body>
@@ -207,16 +268,55 @@ h2{
 
     <footer>
             <div id="foot">
-            <a href="index.html"><img src="icones/home.png" id="icone"></a>
-            <a href="todolist.html"><img src="icones/tache.png" id="icone"></a>
-            <a href="habitudes.html"><img src="icones/habitudes.png" id="icone"></a>
-            <a href="sommeil.html"><img src="icones/sommeil.png" id="iconesommeil"></a>
-            <a href="timer_complet.html"><img src="icones/timer.png" id="icone"></a>
-            <a href="stats.html"><img src="icones/stats.png" id="icone"></a>
+            <a href="index.html"><img src="icones/home1.png" id="icone"></a>
+            <a href="todolist.html"><img src="icones/taches2.png" id="icone"></a>
+            <a href="habitudes.html"><img src="icones/habitudes2.png" id="icone"></a>
+            <a href="sommeil.html"><img src="icones/sommeil1.png" id="icone"></a>
+            <a href="timer_complet.html"><img src="icones/timer1.png" id="icone"></a>
+            
+            <a href="javascript:void(0)" onclick="toggleMenu()"><img src="icones/nav1.png" id="icone"></a>
             
             </div>
         </footer>
+    
+<div id="moreMenu" class="side-menu">
+    <div class="menu-header">
+        <h3>Plus d'outils</h3>
+        <button onclick="toggleMenu()" class="close-btn">✕</button>
+    </div>
+    <div class="menu-content">
+        <a href="notes.html" class="menu-item">
+            <span class="icon"><img src="icones/notes1.png" id="icone"></span>
+            <div class="text">
+                <strong>Notes</strong>
+                
+            </div>
+        </a>
+        <a href="stats.html" class="menu-item">
+            <span class="icon"><img src="icones/stats1.png" id="icone"></span>
+            <div class="text">
+                <strong>Statistiques</strong>
+                
+            </div>
+        </a>
+        </div>
+</div>
+
+<div id="overlay" onclick="toggleMenu()"></div>
     <script>
+        function toggleMenu() {
+    const menu = document.getElementById('moreMenu');
+    const overlay = document.getElementById('overlay');
+    
+    if (menu.classList.contains('active')) {
+        menu.classList.remove('active');
+        overlay.style.display = 'none';
+    } else {
+        menu.classList.add('active');
+        overlay.style.display = 'block';
+    }
+}
+
         document.addEventListener('DOMContentLoaded', displayNotes);
 
         function saveNote() {

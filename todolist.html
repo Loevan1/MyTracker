@@ -13,7 +13,7 @@
     <header>
     <h1><a href="index.html"></a>MyTracker</h1>
     </header>
-    
+     <div class="form-wrapper">
     <div id="nouvelle_tache">
         <input type="text" id="new_tache" class="input" placeholder="Nouvelle tâche">
         <select id="categories" class="input">
@@ -38,6 +38,7 @@
         <button type="button" id='creer' onclick="creer_tache()">Créer</button>
         
         
+     </div>
      </div>
      <div id="container"></div>
 
@@ -357,16 +358,19 @@ h2{
 #new_tache{
   width: 150px;
 }
+.form-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
 #nouvelle_tache{
-  margin: 10px auto;
   border: none;
   border-radius: 12px;
   padding: 10px;
   background-color: #FFFFFF;
   box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-  width: fit-content;
 }
-
 
 h3{
   font-size: large;

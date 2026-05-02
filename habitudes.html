@@ -31,17 +31,21 @@ body{
   padding-bottom: 60px;
 }
 
+.form-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+  }
+
   .add-form {
     display: flex;
     justify-content: space-between;
-  justify-self:center;
-  margin: 10px auto;
-  border: none;
-  border-radius: 12px;
-  padding: 10px;
-  background-color: #FFFFFF;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-  width: 90%;
+    gap: 10px;
+    border: none;
+    border-radius: 12px;
+    padding: 10px;
+    background-color: #FFFFFF;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
   }
 
   .add-form input {
@@ -298,9 +302,11 @@ footer {
     <header>
     <h1><a href="index.html"></a>MyTracker</h1>
     </header>
+    <div class="form-wrapper">
     <div class="add-form">
     <input type="text" id="new-habit-input" placeholder="Nouvelle habitude…" maxlength="50">
     <button id="creer" onclick="addHabit()">Créer</button>
+  </div>
   </div>
     <h2>Mes habitudes</h2>
   <div class="week-grid" id="week-grid"></div>

@@ -250,6 +250,7 @@ function saveTaskStats(tache) {
 function supprimerTache(id) {
   const taches = getTaches();
   const index = taches.findIndex(tache => tache.id === id);
+  if(!confirm("Supprimer ?")) return;
   if (index !== -1) {
     saveTaskStats(taches[index]);
     taches.splice(index, 1);
@@ -259,7 +260,7 @@ function supprimerTache(id) {
 }
 
 
-// fait et suppression
+// fait
 function faitTache(id) {
   const taches = getTaches();
   const index = taches.findIndex(tache => tache.id === id);

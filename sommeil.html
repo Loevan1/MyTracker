@@ -634,6 +634,7 @@ async function programmerRappelSommeil() {
 function deleteLastEntry() {
   var data = load();
   if (data.length === 0) return;
+  if(!confirm("Supprimer ?")) return;
   data.shift(); // supprime le premier élément (le plus récent, vu le tri)
   save(data);
   render();

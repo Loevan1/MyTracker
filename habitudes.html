@@ -470,7 +470,7 @@ function getXP() {
 
   function deleteHabit(id, e) {
     e.stopPropagation();
-    
+    if(!confirm("Supprimer ?")) return;
     const data = loadData();
     data.habits = data.habits.filter(h => h.id !== id);
     // Clean logs

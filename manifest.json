@@ -1,19 +1,19 @@
 {
   "name": "My Tracker",
   "short_name": "My Tracker",
-  "start_url": "/Site---MyTracker/index.html",
+  "start_url": "/MyTracker/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#f0f8ff",
   "icons": [
     {
-      "src": "/Site---MyTracker/icone.png",
+      "src": "/MyTracker/icone.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/Site---MyTracker/icone.png",
+      "src": "/MyTracker/icone.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"

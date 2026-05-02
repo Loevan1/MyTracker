@@ -1,7 +1,7 @@
-const CACHE_NAME = "mytracker-v37";
+const CACHE_NAME = "mytracker-v38";
 const FILES_TO_CACHE = [
-  "/Site---MyTracker/",
-  "/Site---MyTracker/index.html"
+  "/MyTracker/",
+  "/MyTracker/index.html"
 ];
 
 self.addEventListener("install", (event) => {

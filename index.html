@@ -36,10 +36,12 @@
   <div id="citations">
     
     <div class="card">
+    <div class="quote-inner">
       <span class="ornament">"</span>
-    <div id="quoteText"></div>
-    <span class="ornament2">"</span>
-    <div class="author">— <span id="quoteAuthor"></span></div>
+      <div id="quoteText"></div>
+      <span class="ornament2">"</span>
+      <div class="author">— <span id="quoteAuthor"></span></div>
+    </div>
   </div>
   </div>
 
@@ -411,9 +413,19 @@ p{
 
 
 #citations{
-  
-  align-items: center; 
-  margin: 30px;
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+}
+
+.card {
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+.quote-inner {
+  display: inline-block;
+  text-align: left;
 }
 #quoteText{
 text-align:center;

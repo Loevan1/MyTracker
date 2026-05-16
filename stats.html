@@ -589,7 +589,7 @@ a:active {
   <button class="export-btn secondary" onclick="exportJSON('habits')">🎯 Export habitudes uniquement</button>
   <button class="export-btn secondary" onclick="exportJSON('timer')">⏱ Export timer uniquement</button>
   <button class="export-btn secondary" onclick="exportJSON('notes')">📝 Export notes uniquement</button>
-  <p>© 2026 MyTracker V-40</p>
+  <p>© 2026 MyTracker V-41</p>
  
 </div>
 
@@ -1145,14 +1145,25 @@ function renderRecap() {
   const sleepScoreAvg = sleepScores.length ? Math.round(sleepScores.reduce((a,b)=>a+b,0)/sleepScores.length) : 0;
  
   // ---- HABITUDES ----
-  let habitDays = 0, habitTotal = 0, habitDone = 0;
-  Object.keys(habitData.log).forEach(k => {
-    if (!inPeriod(k.slice(0, type==='month'?7:4))) return;
-    habitDays++;
-    habitTotal += habitData.habits.length;
-    habitDone += (habitData.log[k]||[]).length;
-  });
-  const habitRate = habitTotal > 0 ? Math.round(habitDone/habitTotal*100) : 0;
+  // ---- HABITUDES ----
+const habitCreatedAt = {};
+habitData.habits.forEach(h => {
+  const firstDay = Object.keys(habitData.log)
+    .filter(k => (habitData.log[k] || []).includes(h.id))
+    .sort()[0];
+  habitCreatedAt[h.id] = firstDay || '9999-12-31';  // jamais cochée = ignorée
+});
+
+let habitDays = 0, habitTotal = 0, habitDone = 0;
+Object.keys(habitData.log).forEach(k => {
+  if (!inPeriod(k.slice(0, type==='month'?7:4))) return;
+  const activeCount = habitData.habits.filter(h => habitCreatedAt[h.id] <= k).length; // ← uniquement les habitudes qui existaient ce jour-là
+  if (activeCount === 0) return;
+  habitDays++;
+  habitTotal += activeCount;
+  habitDone += (habitData.log[k]||[]).length;
+});
+const habitRate = habitTotal > 0 ? Math.round(habitDone/habitTotal*100) : 0;
  
 // ---- TIMER ----
   // ---- TIMER ----

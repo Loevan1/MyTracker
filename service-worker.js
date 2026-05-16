@@ -1,4 +1,4 @@
-const CACHE_NAME = "mytracker-v40";
+const CACHE_NAME = "mytracker-v41";
 const FILES_TO_CACHE = [
   "/MyTracker/",
   "/MyTracker/index.html"

@@ -570,7 +570,7 @@ function loop() {
     saveDept(departments[state.deptIndex].num);
     setTimeout(completeDepartment, 1200);
     const timerLog = JSON.parse(localStorage.getItem('timerLog') || '[]');
-timerLog.push({ date: new Date().toISOString(), minutes: parseFloat(timerInput.value) });
+timerLog.push({ date: new Date().toISOString(), minutes: parseFloat((elapsedReal / 60).toFixed(2)) });
 localStorage.setItem('timerLog', JSON.stringify(timerLog));
     return;
   }

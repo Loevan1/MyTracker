@@ -589,7 +589,7 @@ a:active {
   <button class="export-btn secondary" onclick="exportJSON('habits')">🎯 Export habitudes uniquement</button>
   <button class="export-btn secondary" onclick="exportJSON('timer')">⏱ Export timer uniquement</button>
   <button class="export-btn secondary" onclick="exportJSON('notes')">📝 Export notes uniquement</button>
-  <p>© 2026 MyTracker V-41</p>
+  <p>© 2026 MyTracker V-42</p>
  
 </div>
 
@@ -1193,21 +1193,19 @@ const habitRate = habitTotal > 0 ? Math.round(habitDone/habitTotal*100) : 0;
       hourStats[hourName].count++;
     });
 
-    // Calcul du jour gagnant (moyenne par jour de semaine)
-    let maxDayAvg = 0;
-    let bestDay = "";
-    for (const [day, data] of Object.entries(dayStats)) {
-      const avg = data.total / data.occurrences.size;
-      if (avg > maxDayAvg) { maxDayAvg = avg; bestDay = day; }
-    }
+    // Calcul du jour gagnant (total cumulé)
+let maxDayTotal = 0;
+let bestDay = "";
+for (const [day, data] of Object.entries(dayStats)) {
+  if (data.total > maxDayTotal) { maxDayTotal = data.total; bestDay = day; }
+}
 
-    // Calcul de l'heure gagnante (moyenne par créneau)
-    let maxHourAvg = 0;
-    let bestHour = "";
-    for (const [hour, data] of Object.entries(hourStats)) {
-      const avg = data.total / data.count;
-      if (avg > maxHourAvg) { maxHourAvg = avg; bestHour = hour; }
-    }
+// Calcul de l'heure gagnante (total cumulé)
+let maxHourTotal = 0;
+let bestHour = "";
+for (const [hour, data] of Object.entries(hourStats)) {
+  if (data.total > maxHourTotal) { maxHourTotal = data.total; bestHour = hour; }
+}
 
     bestMoment = `${bestDay} vers ${bestHour}`;
   }

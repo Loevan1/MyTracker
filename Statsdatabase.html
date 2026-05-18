@@ -767,7 +767,7 @@ function syncUpdateUI() {
 async function syncRequest(action, body) {
   const res=await fetch(SYNC_API,{
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers:{'Content-Type':'text/plain'},
     body:JSON.stringify({action,...body})
   });
   return res.json();
@@ -791,61 +791,54 @@ async function syncPush(silent) {
   } catch(e) { if (!silent) syncSetStatus('Serveur inaccessible.','err'); }
 }
 
-/* PULL : récupère les données du serveur → localStorage
-   Applique sans recharger la page, réinitialise l'UI */
+/* PULL : toujours récupérer le serveur au chargement.
+   On applique seulement si le serveur est plus récent que
+   le dernier push qu'ON a fait (SYNC_SERVER_TS).
+   Si le serveur n'a rien ou est moins récent → on push. */
 async function syncPull() {
   const token=localStorage.getItem(SYNC_TOKEN_KEY);
   if (!token) return;
   try {
     const r=await syncRequest('pull',{token});
     if (!r.ok) {
-      // Pas de données sur le serveur → on push ce qu'on a
-      if (r.error!=='invalid_token') syncPush(false);
-      else { syncLogout(); syncSetStatus('Session expirée, reconnecte-toi.','err'); }
-      return;
-    }
-    const serverTs  = r.updated_at  || null;
-    const knownTs   = localStorage.getItem(SYNC_SERVER_TS) || null;
-
-    // Le serveur est plus récent seulement si son ts est STRICTEMENT supérieur
-    // à ce qu'on avait mémorisé après notre dernier push/pull
-    const serverIsNewer = serverTs && (!knownTs || serverTs > knownTs);
-
-    if (!serverIsNewer) {
-      // On a déjà ce que le serveur a (ou mieux) → push
-      syncPush(true);
+      if (r.error==='invalid_token') { syncLogout(); syncSetStatus('Session expirée, reconnecte-toi.','err'); }
+      else syncPush(false); // aucune donnée serveur → push ce qu'on a
       return;
     }
 
-    // Applique les données du serveur dans le localStorage
-    const d=r.data||{};
-    Object.keys(d).forEach(k => {
-      localStorage.setItem(k, typeof d[k]==='string' ? d[k] : JSON.stringify(d[k]));
-    });
-    // Mémorise le ts du serveur pour ne pas repuller au prochain chargement
-    localStorage.setItem(SYNC_SERVER_TS, serverTs);
+    const serverTs = r.updated_at || null;
+    const myLastTs = localStorage.getItem(SYNC_SERVER_TS) || null;
 
-    syncSetStatus('☁️ Données récupérées depuis le cloud','ok');
-
-    // Rafraîchit l'UI sur place, sans reload
-    initGlobal(); initSleep(); initHabits(); initTasks(); initTimer();
-    initRecapSelector(); renderRecap();
-
-  } catch(e) { /* silencieux au chargement */ }
+    // serverTs > myLastTs = le serveur a été mis à jour par un AUTRE appareil
+    // depuis notre dernier push → on applique
+    if (serverTs && (!myLastTs || serverTs > myLastTs)) {
+      const d=r.data||{};
+      Object.keys(d).forEach(k => {
+        localStorage.setItem(k, typeof d[k]==='string' ? d[k] : JSON.stringify(d[k]));
+      });
+      localStorage.setItem(SYNC_SERVER_TS, serverTs);
+      syncSetStatus('☁️ Données récupérées depuis le cloud','ok');
+      initGlobal(); initSleep(); initHabits(); initTasks(); initTimer();
+      initRecapSelector(); renderRecap();
+    } else {
+      // Le serveur a ce qu'on lui a déjà donné → on est à jour, rien à faire
+      const now=new Date();
+      syncSetStatus('☁️ Sync '+now.toLocaleDateString('fr-FR')+' à '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),'ok');
+    }
+  } catch(e) { /* silencieux */ }
 }
 
 /* Démarre la sync automatique */
 function initAutoSync() {
   const token=localStorage.getItem(SYNC_TOKEN_KEY);
   if (!token) return;
-  // Pull au chargement (compare ts serveur vs ts connu)
+  // Toujours puller au chargement
   syncPull();
-  // Push toutes les 5 minutes
+  // Push toutes les 5 minutes seulement
   if (syncTimer) clearInterval(syncTimer);
   syncTimer=setInterval(()=>syncPush(true), 5*60*1000);
-  
+  // PAS de beforeunload : c'était lui qui écrasait le serveur à chaque actualisation
 }
-
 
 /* LOGIN / REGISTER / LOGOUT */
 async function syncRegister() {

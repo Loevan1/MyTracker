@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Stats — MyTracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F1F5F9;
+  --surface: #FFFFFF;
+  --border: #E2E8F0;
+  --text: #1E293B;
+  --muted: #64748B;
+  --blue: #2563EB;
+  --green: #16A34A;
+  --orange: #F59E0B;
+  --red: #EF4444;
+  --purple: #7C3AED;
+  --cyan: #0891B2;
+}
+* { margin: 0; font-family: 'Poppins', sans-serif; }
+body { background: var(--bg); color: var(--text); padding-bottom: 80px; }
+header { background-color: #f0f8ff; padding: 15px; border-bottom: 5px solid #f8f8f9; }
+p { text-align: center; font-size: small; margin-top: 20px; }
+
+/* TABS */
+.tabs { display:flex; gap:5px; padding:10px 12px; background:var(--surface); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10; }
+.tab { flex:1; padding:6px 5px; border:none; border-radius:8px; font-size:0.70rem; font-weight:600; cursor:pointer; background:var(--border); color:var(--muted); transition:all .15s; }
+.tab.active { background:var(--blue); color:white; }
+.section { display:none; padding:12px; }
+.section.active { display:block; }
+
+/* XP HERO */
+.xp-hero { background:linear-gradient(135deg,#1E3A8A 0%,#2563EB 60%,#06B6D4 100%); border-radius:16px; padding:20px; color:white; margin-bottom:12px; position:relative; overflow:hidden; }
+.xp-hero::before { content:''; position:absolute; top:-30px; right:-30px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,0.07); }
+.xp-label { font-size:0.75rem; opacity:.7; text-transform:uppercase; letter-spacing:1px; }
+.xp-value { font-size:3rem; font-weight:800; line-height:1; }
+.xp-sub { font-size:0.8rem; opacity:.75; margin-top:4px; }
+.xp-bar-wrap { margin-top:14px; background:rgba(255,255,255,0.2); border-radius:99px; height:8px; }
+.xp-bar { height:8px; border-radius:99px; background:white; transition:width .6s ease; }
+
+/* KPI */
+.kpi-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.kpi-card { background:var(--surface); border-radius:14px; padding:14px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+.kpi-icon { font-size:1.4rem; margin-bottom:4px; }
+.kpi-val { font-size:1.5rem; font-weight:800; line-height:1.1; }
+.kpi-lbl { font-size:0.7rem; color:var(--muted); margin-top:2px; }
+.kpi-card.accent-green .kpi-val { color:var(--green); }
+.kpi-card.accent-blue .kpi-val { color:var(--blue); }
+.kpi-card.accent-orange .kpi-val { color:var(--orange); }
+.kpi-card.accent-purple .kpi-val { color:var(--purple); }
+.kpi-card.accent-cyan .kpi-val { color:var(--cyan); }
+.kpi-card.accent-red .kpi-val { color:var(--red); }
+
+/* SEC TITLE */
+.sec-title { font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin:16px 0 8px; }
+
+/* BAR CHART */
+.bar-chart { display:flex; flex-direction:column; gap:8px; }
+.bar-row { display:flex; align-items:center; gap:8px; }
+.bar-name { font-size:0.72rem; width:80px; flex-shrink:0; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bar-track { flex:1; height:10px; background:var(--border); border-radius:99px; overflow:hidden; }
+.bar-fill { height:100%; border-radius:99px; transition:width .5s ease; }
+.bar-val { font-size:0.7rem; width:36px; text-align:right; color:var(--muted); }
+
+/* HEATMAP */
+.heatmap-wrap { background:var(--surface); border-radius:14px; padding:14px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-bottom:12px; }
+.heatmap-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-top:10px; }
+.hm-cell { aspect-ratio:1; border-radius:6px; background:var(--border); display:flex; align-items:center; justify-content:center; font-size:0.6rem; font-weight:600; color:white; transition:transform .1s; }
+.hm-cell:active { transform:scale(.9); }
+.hm-day-labels { display:grid; grid-template-columns:repeat(7,1fr); gap:5px; margin-bottom:3px; }
+.hm-day-lbl { font-size:0.58rem; text-align:center; color:var(--muted); text-transform:uppercase; }
+
+/* SLEEP CHART */
+.sleep-chart-wrap { background:var(--surface); border-radius:14px; padding:14px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-bottom:12px; overflow:hidden; }
+.sleep-bars { display:flex; align-items:flex-end; gap:4px; height:80px; margin-top:10px; }
+.sleep-bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; }
+.sleep-bar-inner { width:100%; border-radius:4px 4px 0 0; min-height:4px; transition:height .4s ease; }
+.sleep-bar-lbl { font-size:0.55rem; color:var(--muted); }
+
+/* SCORE ROW */
+.score-row { display:flex; align-items:center; justify-content:space-between; background:var(--surface); border-radius:12px; padding:10px 14px; margin-bottom:8px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+.score-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.score-name { font-size:0.8rem; font-weight:500; flex:1; margin-left:10px; }
+.score-num { font-size:0.8rem; color:var(--muted); }
+
+/* FOOTER */
+footer { position:fixed; bottom:0; left:0; width:100%; padding-top:10px; box-sizing:border-box; }
+#foot { padding:7px; margin:0 5px; border:rgb(190,218,241) 3px solid; border-radius:10px; background:white; display:flex; justify-content:space-between; align-items:center; }
+#icone { width:26px; height:26px; }
+a:hover { color:#0056b3; text-decoration:underline; }
+a:visited { color:#007bff; }
+a:active { color:#0056b3; }
+
+/* BADGES */
+.badge { display:inline-block; font-size:0.65rem; font-weight:600; padding:2px 8px; border-radius:20px; color:white; }
+.badge-green { background:var(--green); }
+.badge-blue { background:var(--blue); }
+.badge-cyan { background:var(--cyan); }
+.badge-orange { background:var(--orange); }
+.badge-red { background:var(--red); }
+.empty { text-align:center; color:var(--muted); font-size:0.8rem; padding:20px; }
+.streak-big { font-size:2.2rem; font-weight:800; }
+.record-card { background:var(--surface); border-radius:14px; padding:14px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-bottom:10px; }
+.record-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.record-title { font-size:0.85rem; font-weight:600; }
+
+/* RECAP */
+.period-selector { display:flex; gap:8px; margin-bottom:14px; align-items:center; }
+.period-selector select { flex:1; background:var(--surface); border:1.5px solid var(--border); border-radius:8px; padding:7px 10px; font-size:0.8rem; font-weight:500; color:var(--text); font-family:'Poppins',sans-serif; }
+.recap-block { background:var(--surface); border-radius:14px; padding:14px; margin-top:10px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-bottom:12px; }
+.recap-block-title { font-size:0.78rem; font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.recap-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border); font-size:0.8rem; }
+.recap-row:last-child { border-bottom:none; }
+.recap-row-val { font-family:'DM Mono',monospace; font-size:0.78rem; font-weight:500; }
+.month-mini-bar { display:flex; align-items:flex-end; gap:3px; height:50px; margin-top:10px; }
+.month-mini-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; }
+.month-mini-inner { width:100%; border-radius:3px 3px 0 0; min-height:2px; }
+.month-mini-lbl { font-size:0.5rem; color:var(--muted); }
+
+/* EXPORT */
+.export-btn { width:100%; padding:13px; border:none; border-radius:12px; background:var(--blue); color:white; font-size:0.85rem; font-weight:600; font-family:'Poppins',sans-serif; cursor:pointer; margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:8px; transition:background .15s; }
+.export-btn:hover { background:#1E40AF; }
+.export-btn.secondary { background:var(--surface); color:var(--text); border:1.5px solid var(--border); }
+.export-btn.secondary:hover { background:var(--border); }
+
+/* SYNC */
+.sync-card { background:var(--surface); border-radius:14px; padding:14px; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-bottom:12px; border-left:4px solid var(--purple); }
+.sync-card input { width:100%; box-sizing:border-box; border:1.5px solid var(--border); border-radius:8px; padding:9px 12px; font-size:0.82rem; font-family:'Poppins',sans-serif; color:var(--text); margin-bottom:8px; background:var(--bg); }
+.sync-card input:focus { outline:none; border-color:var(--purple); }
+.sync-status { font-size:0.72rem; margin-top:8px; padding:7px 10px; border-radius:8px; display:none; font-weight:500; }
+.sync-status.ok    { background:#DCFCE7; color:var(--green); display:block; }
+.sync-status.err   { background:#FEE2E2; color:var(--red);   display:block; }
+.sync-status.loading { background:#EFF6FF; color:var(--blue); display:block; }
+.sync-logged { display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; margin-bottom:8px; }
+.sync-logged span { color:var(--muted); }
+.sync-logged strong { color:var(--purple); }
+.sync-logout { font-size:0.7rem; color:var(--red); background:none; border:none; cursor:pointer; font-family:'Poppins',sans-serif; text-decoration:underline; }
+
+/* SIDE MENU */
+.side-menu { position:fixed; bottom:-100%; right:15px; background:white; border-radius:20px; transition:bottom 0.3s ease; z-index:2000; padding:20px; box-shadow:0 -10px 25px rgba(0,0,0,0.1); }
+.side-menu.active { bottom:15px; }
+.menu-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #F1F5F9; padding-bottom:10px; color:#16A34A; }
+.close-btn { background:none; border:none; font-size:20px; cursor:pointer; color:#64748B; }
+.menu-item { display:flex; align-items:center; gap:15px; padding:15px; text-decoration:none; color:#1E293B; border-radius:12px; margin-bottom:10px; transition:background 0.2s; }
+.menu-item:active { background:#F1F5F9; }
+.menu-item .icon { font-size:24px; }
+.menu-item strong { display:block; font-size:1rem; }
+.menu-item p { font-size:0.75rem; color:#64748B; margin:0; }
+#overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); display:none; z-index:1500; }
+</style>
+</head>
+<body>
+
+<header><h1>MyTracker</h1></header>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('global')">Global</button>
+  <button class="tab" onclick="showTab('sommeil')">Sommeil</button>
+  <button class="tab" onclick="showTab('habitudes')">Habitudes</button>
+  <button class="tab" onclick="showTab('taches')">Tâches</button>
+  <button class="tab" onclick="showTab('timer')">Timer</button>
+  <button class="tab" onclick="showTab('recap')">Récap</button>
+</div>
+
+<!-- GLOBAL -->
+<div class="section active" id="tab-global">
+  <div class="xp-hero">
+    <div class="xp-label">Points d'expérience</div>
+    <div class="xp-value" id="xp-val">0</div>
+    <div class="xp-sub" id="xp-level">Niveau 1 — Débutant</div>
+    <div class="xp-bar-wrap"><div class="xp-bar" id="xp-bar" style="width:0%"></div></div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card accent-green"><div class="kpi-icon">😴</div><div class="kpi-val" id="g-avg-sleep">--</div><div class="kpi-lbl">Moyenne sommeil</div></div>
+    <div class="kpi-card accent-blue"><div class="kpi-icon">✅</div><div class="kpi-val" id="g-tasks-done">0</div><div class="kpi-lbl">Tâches faites</div></div>
+    <div class="kpi-card accent-orange"><div class="kpi-icon">🔥</div><div class="kpi-val" id="g-best-streak">0</div><div class="kpi-lbl">Meilleure streak</div></div>
+    <div class="kpi-card accent-purple"><div class="kpi-icon">🎯</div><div class="kpi-val" id="g-habits-today">0/0</div><div class="kpi-lbl">Habitudes auj.</div></div>
+    <div class="kpi-card accent-cyan"><div class="kpi-icon">⏱️</div><div class="kpi-val" id="g-timer-total">0h</div><div class="kpi-lbl">Temps de travail</div></div>
+    <div class="kpi-card accent-green"><div class="kpi-icon">🌙</div><div class="kpi-val" id="g-sleep-nights">0</div><div class="kpi-lbl">Nuits enregistrées</div></div>
+  </div>
+  <div class="sec-title">Cette semaine</div>
+  <div class="heatmap-wrap">
+    <div style="font-size:0.78rem;font-weight:600;">Habitudes complétées / jour</div>
+    <div class="hm-day-labels" id="hm-labels"></div>
+    <div class="heatmap-grid" id="heatmap"></div>
+  </div>
+</div>
+
+<!-- SOMMEIL -->
+<div class="section" id="tab-sommeil">
+  <div class="kpi-grid">
+    <div class="kpi-card accent-blue"><div class="kpi-icon">⏰</div><div class="kpi-val" id="s-avg">--</div><div class="kpi-lbl">Moyenne / nuit</div></div>
+    <div class="kpi-card accent-green"><div class="kpi-icon">🏆</div><div class="kpi-val" id="s-best">--</div><div class="kpi-lbl">Meilleure nuit</div></div>
+    <div class="kpi-card accent-orange"><div class="kpi-icon">📉</div><div class="kpi-val" id="s-worst">--</div><div class="kpi-lbl">Nuit la plus courte</div></div>
+    <div class="kpi-card accent-purple"><div class="kpi-icon">⭐</div><div class="kpi-val" id="s-score-avg">--</div><div class="kpi-lbl">Score moyen</div></div>
+    <div class="kpi-card accent-cyan"><div class="kpi-icon">🕐</div><div class="kpi-val" id="s-avg-bed">--</div><div class="kpi-lbl">Heure coucher moy.</div></div>
+    <div class="kpi-card accent-green"><div class="kpi-icon">☀️</div><div class="kpi-val" id="s-avg-wake">--</div><div class="kpi-lbl">Heure réveil moy.</div></div>
+  </div>
+  <div class="sec-title">Répartition qualité</div>
+  <div class="bar-chart" id="quality-bars"></div>
+  <div class="sec-title">7 dernières nuits</div>
+  <div class="sleep-chart-wrap">
+    <div style="font-size:0.78rem;font-weight:600;">Durée de sommeil (heures)</div>
+    <div class="sleep-bars" id="sleep-bars"></div>
+  </div>
+</div>
+
+<!-- HABITUDES -->
+<div class="section" id="tab-habitudes">
+  <div class="kpi-grid">
+    <div class="kpi-card accent-green"><div class="kpi-icon">📋</div><div class="kpi-val" id="h-total">0</div><div class="kpi-lbl">Habitudes créées</div></div>
+    <div class="kpi-card accent-blue"><div class="kpi-icon">✅</div><div class="kpi-val" id="h-today">0</div><div class="kpi-lbl">Complétées auj.</div></div>
+    <div class="kpi-card accent-orange"><div class="kpi-icon">🔥</div><div class="kpi-val" id="h-best-streak">0</div><div class="kpi-lbl">Meilleure streak</div></div>
+    <div class="kpi-card accent-purple"><div class="kpi-icon">📅</div><div class="kpi-val" id="h-total-done">0</div><div class="kpi-lbl">Total complétions</div></div>
+  </div>
+  <div class="sec-title">Streak max par habitude</div>
+  <div class="bar-chart" id="habit-streaks"></div>
+  <div class="sec-title">Taux de réussite (7j)</div>
+  <div class="bar-chart" id="habit-rates"></div>
+</div>
+
+<!-- TÂCHES -->
+<div class="section" id="tab-taches">
+  <div class="kpi-grid">
+    <div class="kpi-card accent-green"><div class="kpi-icon">✅</div><div class="kpi-val" id="t-done">0</div><div class="kpi-lbl">Tâches faites</div></div>
+    <div class="kpi-card accent-blue"><div class="kpi-icon">📋</div><div class="kpi-val" id="t-pending">0</div><div class="kpi-lbl">En attente</div></div>
+    <div class="kpi-card accent-orange"><div class="kpi-icon">⚠️</div><div class="kpi-val" id="t-important">0</div><div class="kpi-lbl">Importantes</div></div>
+    <div class="kpi-card accent-red"><div class="kpi-icon">📅</div><div class="kpi-val" id="t-overdue">0</div><div class="kpi-lbl">En retard</div></div>
+  </div>
+  <div class="sec-title">Par catégorie</div>
+  <div class="bar-chart" id="cat-bars"></div>
+  <div class="sec-title">Par durée</div>
+  <div class="bar-chart" id="dur-bars"></div>
+</div>
+
+<!-- TIMER -->
+<div class="section" id="tab-timer">
+  <div class="kpi-grid">
+    <div class="kpi-card accent-cyan"><div class="kpi-icon">⏱️</div><div class="kpi-val" id="tm-total">0h</div><div class="kpi-lbl">Temps total</div></div>
+    <div class="kpi-card accent-blue"><div class="kpi-icon">📅</div><div class="kpi-val" id="tm-sessions">0</div><div class="kpi-lbl">Sessions</div></div>
+    <div class="kpi-card accent-green"><div class="kpi-icon">📊</div><div class="kpi-val" id="tm-avg">0m</div><div class="kpi-lbl">Durée moyenne</div></div>
+    <div class="kpi-card accent-orange"><div class="kpi-icon">🏆</div><div class="kpi-val" id="tm-best-day">0h</div><div class="kpi-lbl">Meilleur jour</div></div>
+    <div class="kpi-card accent-purple"><div class="kpi-icon">📅</div><div class="kpi-val" id="tm-this-week">0h</div><div class="kpi-lbl">Cette semaine</div></div>
+    <div class="kpi-card accent-cyan"><div class="kpi-icon">🗺️</div><div class="kpi-val" id="tm-dept-pct">0%</div><div class="kpi-lbl">Carte dévoilée</div></div>
+  </div>
+  <div class="sec-title">7 derniers jours</div>
+  <div class="sleep-chart-wrap">
+    <div style="font-size:0.78rem;font-weight:600;">Minutes de travail / jour</div>
+    <div class="sleep-bars" id="timer-bars"></div>
+  </div>
+  <div class="sec-title">Sessions récentes</div>
+  <div id="timer-sessions-list"></div>
+</div>
+
+<!-- RÉCAP -->
+<div class="section" id="tab-recap">
+  <div class="period-selector">
+    <select id="recap-type" onchange="renderRecap()">
+      <option value="month">Mois</option>
+      <option value="year">Année</option>
+    </select>
+    <select id="recap-period" onchange="renderRecap()"></select>
+  </div>
+  <div id="recap-content"></div>
+
+  <div class="sec-title">☁️ Sauvegarde cloud</div>
+  <div class="sync-card">
+    <div id="sync-logged-block" style="display:none">
+      <div class="sync-logged">
+        <span>Connecté : <strong id="sync-email-display"></strong></span>
+        <button class="sync-logout" onclick="syncLogout()">Déconnexion</button>
+      </div>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;margin-bottom:8px;">
+        Sync auto — pull au chargement, push toutes les 5 min
+      </div>
+    </div>
+    <div id="sync-login-block">
+      <div style="font-size:0.82rem;font-weight:600;margin-bottom:10px;">🔐 Connexion à ton compte</div>
+      <input type="email" id="sync-email" placeholder="Email" autocomplete="email">
+      <input type="password" id="sync-password" placeholder="Mot de passe" autocomplete="current-password">
+      <button class="export-btn" style="background:var(--purple);margin-bottom:4px" onclick="syncLogin()">Se connecter</button>
+      <button class="export-btn secondary" style="margin-bottom:0;font-size:0.75rem" onclick="syncRegister()">Créer un compte</button>
+    </div>
+    <div class="sync-status" id="sync-status"></div>
+  </div>
+
+  <div class="sec-title">Export ponctuel</div>
+  <button class="export-btn" onclick="exportJSON()">⬇ Exporter toutes les données (JSON)</button>
+  <button class="export-btn secondary" onclick="exportJSON('sleep')">🌙 Export sommeil uniquement</button>
+  <button class="export-btn secondary" onclick="exportJSON('habits')">🎯 Export habitudes uniquement</button>
+  <button class="export-btn secondary" onclick="exportJSON('timer')">⏱ Export timer uniquement</button>
+  <button class="export-btn secondary" onclick="exportJSON('notes')">📝 Export notes uniquement</button>
+  <p>© 2026 MyTracker V-43</p>
+</div>
+
+<footer>
+  <div id="foot">
+    <a href="index.html"><img src="icones/home1.png" id="icone"></a>
+    <a href="todolist.html"><img src="icones/taches2.png" id="icone"></a>
+    <a href="habitudes.html"><img src="icones/habitudes2.png" id="icone"></a>
+    <a href="sommeil.html"><img src="icones/sommeil1.png" id="icone"></a>
+    <a href="timer_complet.html"><img src="icones/timer1.png" id="icone"></a>
+    <a href="javascript:void(0)" onclick="toggleMenu()"><img src="icones/nav1.png" id="icone"></a>
+  </div>
+</footer>
+
+<div id="moreMenu" class="side-menu">
+  <div class="menu-header">
+    <h3>Plus d'outils</h3>
+    <button onclick="toggleMenu()" class="close-btn">✕</button>
+  </div>
+  <div class="menu-content">
+    <a href="notes.html" class="menu-item">
+      <span class="icon"><img src="icones/notes1.png" id="icone"></span>
+      <div class="text"><strong>Notes</strong></div>
+    </a>
+    <a href="stats.html" class="menu-item">
+      <span class="icon"><img src="icones/stats1.png" id="icone"></span>
+      <div class="text"><strong>Statistiques</strong></div>
+    </a>
+  </div>
+</div>
+<div id="overlay" onclick="toggleMenu()"></div>
+
+<script>
+/* ===== MENU ===== */
+function toggleMenu() {
+  const menu = document.getElementById('moreMenu');
+  const overlay = document.getElementById('overlay');
+  if (menu.classList.contains('active')) {
+    menu.classList.remove('active');
+    overlay.style.display = 'none';
+  } else {
+    menu.classList.add('active');
+    overlay.style.display = 'block';
+  }
+}
+
+/* ===== UTILS ===== */
+function pad(n) { return String(n).padStart(2,'0'); }
+function todayStr() {
+  const n = new Date();
+  return n.getFullYear()+'-'+pad(n.getMonth()+1)+'-'+pad(n.getDate());
+}
+function fmtH(h) {
+  const hh = Math.floor(h), mm = Math.round((h-hh)*60);
+  return mm > 0 ? hh+'h'+pad(mm) : hh+'h';
+}
+function getKey(d) {
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+
+/* ===== TABS ===== */
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+/* ===== DATA LOADERS ===== */
+function getSleepData()  { try { return JSON.parse(localStorage.getItem('sleep_entries_v2')) || []; } catch(e) { return []; } }
+function getHabitData()  { try { return JSON.parse(localStorage.getItem('habitData') || '{"habits":[],"log":{}}'); } catch(e) { return {habits:[],log:{}}; } }
+function getTaches()     { try { return JSON.parse(localStorage.getItem('taches')) || []; } catch(e) { return []; } }
+function getXP()         { return parseInt(localStorage.getItem('XP')) || 0; }
+function getTachesFaites() { return parseInt(localStorage.getItem('tachesFaites')) || 0; }
+function getTimerLog()   { try { return JSON.parse(localStorage.getItem('timerLog')) || []; } catch(e) { return []; } }
+
+function getAllData() {
+  const keys = ['sleep_entries_v2','habitData','taches','tachesFaites','timerLog','taskStats','XP','global','mytracker_notes','streak_count'];
+  const data = {};
+  keys.forEach(k => {
+    const v = localStorage.getItem(k);
+    if (v !== null) {
+      try { data[k] = JSON.parse(v); } catch(e) { data[k] = v; }
+    }
+  });
+  return data;
+}
+
+/* ===== SLEEP SCORE ===== */
+function calcScore(entry) {
+  const startDate = new Date(entry.start);
+  const scoreQuantite = Math.min((entry.hours / 8) * 80, 80);
+  const coef = {'Excellente':1.0,'Bonne':0.85,'Moyenne':0.6,'Mauvaise':0.4}[entry.quality] || 0.85;
+  const hC = startDate.getHours(), mC = startDate.getMinutes();
+  const coucherMin = (hC < 12 ? hC+24 : hC)*60+mC;
+  const diff = coucherMin <= 23*60 ? 0 : coucherMin - 23*60;
+  const scoreReg = diff <= 30 ? 20 : diff <= 60 ? 10 : diff <= 90 ? 5 : 0;
+  return Math.round((scoreQuantite + scoreReg) * coef);
+}
+function scoreColor(s) {
+  if (s >= 80) return '#16A34A';
+  if (s >= 65) return '#3B82F6';
+  if (s >= 50) return '#06B6D4';
+  if (s >= 35) return '#F59E0B';
+  return '#EF4444';
+}
+
+/* ===== XP LEVELS ===== */
+function getLevel(xp) {
+  const levels = [
+    {min:0,    max:250,      name:'Débutant',  next:250},
+    {min:250,  max:750,      name:'Régulier',  next:750},
+    {min:750,  max:1500,     name:'Appliqué',  next:1500},
+    {min:1500, max:3000,     name:'Discipliné',next:3000},
+    {min:3000, max:5000,     name:'Expert',    next:5000},
+    {min:5000, max:Infinity, name:'Maître',    next:100000},
+  ];
+  for (const l of levels) { if (xp >= l.min && xp < l.max) return l; }
+  return levels[levels.length-1];
+}
+
+/* ===== HABIT STREAK ===== */
+function getMaxStreak(data, habitId) {
+  const allDays = Object.keys(data.log).filter(k => (data.log[k]||[]).includes(habitId)).sort();
+  if (allDays.length === 0) return 0;
+  let max = 1, cur = 1;
+  for (let i = 1; i < allDays.length; i++) {
+    const diff = (new Date(allDays[i]) - new Date(allDays[i-1])) / 86400000;
+    if (diff === 1) { cur++; if (cur > max) max = cur; } else cur = 1;
+  }
+  return max;
+}
+
+/* ===== RENDER BAR CHART ===== */
+function renderBarChart(containerId, items, color, forceMax) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (items.length === 0) { el.innerHTML = '<div class="empty">Aucune donnée</div>'; return; }
+  const max = forceMax !== undefined ? forceMax : Math.max(...items.map(i => i.val), 1);
+  el.innerHTML = items.map(item => `
+    <div class="bar-row">
+      <div class="bar-name" title="${item.name}">${item.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.min(item.val/max*100,100).toFixed(1)}%;background:${color}"></div></div>
+      <div class="bar-val">${item.formatted || item.val}</div>
+    </div>`).join('');
+}
+
+/* ===== INIT GLOBAL ===== */
+function initGlobal() {
+  const xp = getXP();
+  document.getElementById('xp-val').textContent = xp;
+  const lvl = getLevel(xp);
+  document.getElementById('xp-level').textContent = `Niveau — ${lvl.name}`;
+  document.getElementById('xp-bar').style.width = Math.min(((xp-lvl.min)/(lvl.next-lvl.min)*100),100).toFixed(1)+'%';
+  const sleep = getSleepData();
+  if (sleep.length > 0) document.getElementById('g-avg-sleep').textContent = fmtH(sleep.reduce((a,b)=>a+b.hours,0)/sleep.length);
+  document.getElementById('g-sleep-nights').textContent = sleep.length;
+  document.getElementById('g-tasks-done').textContent = getTachesFaites();
+  const timerLog = getTimerLog();
+  const totalMin = timerLog.reduce((a,b)=>a+b.minutes,0);
+  document.getElementById('g-timer-total').textContent = totalMin >= 60 ? fmtH(totalMin/60) : totalMin+'m';
+  const hData = getHabitData();
+  const todayLog = hData.log[todayStr()] || [];
+  document.getElementById('g-habits-today').textContent = todayLog.length+'/'+hData.habits.length;
+  document.getElementById('g-best-streak').textContent = localStorage.getItem('streak_count') || 0;
+  const DAYS_FR = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+  const now = new Date();
+  const diffToMonday = (now.getDay()===0) ? -6 : 1-now.getDay();
+  const monday = new Date(now); monday.setDate(now.getDate()+diffToMonday);
+  let labelsHtml='', cellsHtml='';
+  const maxPerDay = Math.max(hData.habits.length,1);
+  for (let i=0; i<7; i++) {
+    const d = new Date(monday); d.setDate(monday.getDate()+i);
+    const key = getKey(d);
+    const cnt = (hData.log[key]||[]).length;
+    const pct = cnt/maxPerDay;
+    let bg='#E2E8F0';
+    if (pct>0) bg='#BBF7D0'; if (pct>=.5) bg='#4ADE80'; if (pct>=1) bg='#16A34A';
+    labelsHtml += `<div class="hm-day-lbl">${DAYS_FR[(d.getDay()+6)%7]}</div>`;
+    cellsHtml  += `<div class="hm-cell" style="background:${bg};color:${pct>0?'white':'#94A3B8'}">${cnt||''}</div>`;
+  }
+  document.getElementById('hm-labels').innerHTML = labelsHtml;
+  document.getElementById('heatmap').innerHTML = cellsHtml;
+}
+
+/* ===== INIT SLEEP ===== */
+function initSleep() {
+  const data = getSleepData();
+  if (data.length === 0) return;
+  const hours = data.map(e=>e.hours);
+  const avg = hours.reduce((a,b)=>a+b,0)/hours.length;
+  document.getElementById('s-avg').textContent = fmtH(avg);
+  document.getElementById('s-best').textContent = fmtH(Math.max(...hours));
+  document.getElementById('s-worst').textContent = fmtH(Math.min(...hours));
+  const scores = data.map(calcScore);
+  document.getElementById('s-score-avg').textContent = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)+'/100';
+  const bedMins = data.map(e => { const d=new Date(e.start); let m=d.getHours()*60+d.getMinutes(); if (m<12*60) m+=24*60; return m; });
+  const avgBed = Math.round(bedMins.reduce((a,b)=>a+b,0)/bedMins.length);
+  document.getElementById('s-avg-bed').textContent = pad(Math.floor(avgBed/60)%24)+':'+pad(avgBed%60);
+  const wakeMins = data.map(e => { const d=new Date(e.end); return d.getHours()*60+d.getMinutes(); });
+  const avgWake = Math.round(wakeMins.reduce((a,b)=>a+b,0)/wakeMins.length);
+  document.getElementById('s-avg-wake').textContent = pad(Math.floor(avgWake/60))+':'+pad(avgWake%60);
+  const last7 = data.slice(0,7).reverse();
+  const maxH = Math.max(...last7.map(e=>e.hours),9);
+  document.getElementById('sleep-bars').innerHTML = last7.map(e => {
+    const pct=(e.hours/maxH*60).toFixed(1);
+    const d=new Date(e.start);
+    const DAYS=['Di','Lu','Ma','Me','Je','Ve','Sa'];
+    const col=e.hours>=8?'#16A34A':e.hours>=6?'#3B82F6':'#EF4444';
+    return `<div class="sleep-bar-col"><div class="sleep-bar-inner" style="height:${pct}px;background:${col}"></div><div class="sleep-bar-lbl">${DAYS[d.getDay()]}</div></div>`;
+  }).join('');
+  const qCounts={};
+  data.forEach(e => { qCounts[e.quality]=(qCounts[e.quality]||0)+1; });
+  renderBarChart('quality-bars', Object.entries(qCounts).map(([k,v])=>({name:k,val:v,formatted:v+' nuits'})), '#3B82F6', data.length);
+}
+
+/* ===== INIT HABITS ===== */
+function initHabits() {
+  const data = getHabitData();
+  const todayLog = data.log[todayStr()] || [];
+  document.getElementById('h-total').textContent = data.habits.length;
+  document.getElementById('h-today').textContent = todayLog.length;
+  let totalDone=0;
+  Object.values(data.log).forEach(arr => totalDone+=arr.length);
+  document.getElementById('h-total-done').textContent = totalDone;
+  let bestStreak=0;
+  const streaks = data.habits.map(h => { const s=getMaxStreak(data,h.id); if(s>bestStreak) bestStreak=s; return {name:h.name,streak:s}; });
+  document.getElementById('h-best-streak').textContent = bestStreak;
+  const refMax = Math.max(...streaks.map(s=>s.streak),7);
+  document.getElementById('habit-streaks').innerHTML = streaks.length===0
+    ? '<div class="empty">Aucune donnée</div>'
+    : streaks.map(s=>`<div class="bar-row"><div class="bar-name" title="${s.name}">${s.name}</div><div class="bar-track"><div class="bar-fill" style="width:${(s.streak/refMax*100).toFixed(1)}%;background:#F59E0B"></div></div><div class="bar-val">${s.streak}j 🔥</div></div>`).join('');
+  const now=new Date();
+  const last7days=[];
+  for (let i=0;i<7;i++) { const d=new Date(now); d.setDate(now.getDate()-i); last7days.push(getKey(d)); }
+  renderBarChart('habit-rates', data.habits.map(h => { const done=last7days.filter(k=>(data.log[k]||[]).includes(h.id)).length; return {name:h.name,val:done,formatted:done+'/7'}; }), '#7C3AED', 7);
+}
+
+/* ===== INIT TASKS ===== */
+function initTasks() {
+  const taches=getTaches();
+  const today=new Date(); today.setHours(0,0,0,0);
+  const pending=taches.filter(t=>!t.fait);
+  document.getElementById('t-done').textContent = getTachesFaites();
+  document.getElementById('t-pending').textContent = pending.length;
+  document.getElementById('t-important').textContent = pending.filter(t=>t.important).length;
+  document.getElementById('t-overdue').textContent = pending.filter(t=>t.date&&new Date(t.date)<today).length;
+  let taskStats={};
+  try { taskStats=JSON.parse(localStorage.getItem('taskStats')||'{}'); } catch(e){}
+  const allCats={...taskStats.categories||{}};
+  const allDurs={...taskStats.durations||{}};
+  taches.forEach(t => { if(t.categorie) allCats[t.categorie]=(allCats[t.categorie]||0)+1; if(t.duree) allDurs[t.duree]=(allDurs[t.duree]||0)+1; });
+  renderBarChart('cat-bars', Object.entries(allCats).map(([k,v])=>({name:k,val:v})), '#2563EB', Object.values(allCats).reduce((a,b)=>a+b,0)||1);
+  renderBarChart('dur-bars', Object.entries(allDurs).map(([k,v])=>({name:k,val:v})), '#0891B2', Object.values(allDurs).reduce((a,b)=>a+b,0)||1);
+}
+
+/* ===== INIT TIMER ===== */
+function initTimer() {
+  const log=getTimerLog();
+  if (log.length===0) {
+    ['tm-total','tm-sessions','tm-avg','tm-best-day','tm-this-week'].forEach(id => document.getElementById(id).textContent='0');
+    document.getElementById('timer-bars').innerHTML='<div class="empty">Aucune session enregistrée</div>';
+    document.getElementById('timer-sessions-list').innerHTML='<div class="empty">Lance le timer pour voir tes stats ici !</div>';
+    initTimerDept(); return;
+  }
+  const totalMin=log.reduce((a,b)=>a+b.minutes,0);
+  document.getElementById('tm-total').textContent = totalMin>=60?fmtH(totalMin/60):totalMin+'m';
+  document.getElementById('tm-sessions').textContent = log.length;
+  const avg=Math.round(totalMin/log.length);
+  document.getElementById('tm-avg').textContent = avg>=60?fmtH(avg/60):avg+'m';
+  const byDay={};
+  log.forEach(s => { const k=getKey(new Date(s.date)); byDay[k]=(byDay[k]||0)+s.minutes; });
+  let bestDayMin=0, bestDayDate='';
+  for (const [date,minutes] of Object.entries(byDay)) { if(minutes>bestDayMin){bestDayMin=minutes;bestDayDate=date;} }
+  if (bestDayMin>0) {
+    const dParts=bestDayDate.split('-');
+    document.getElementById('tm-best-day').innerHTML = `${bestDayMin>=60?fmtH(bestDayMin/60):bestDayMin+'m'} <span style="font-size:0.7rem;font-weight:400;color:var(--muted)">(${dParts[2]}/${dParts[1]})</span>`;
+  }
+  const now=new Date();
+  const diffToMonday=now.getDay()===0?-6:1-now.getDay();
+  const monday=new Date(now); monday.setDate(now.getDate()+diffToMonday); monday.setHours(0,0,0,0);
+  let weekMin=0;
+  log.forEach(s=>{if(new Date(s.date)>=monday)weekMin+=s.minutes;});
+  document.getElementById('tm-this-week').textContent = weekMin>=60?fmtH(weekMin/60):weekMin+'m';
+  const last7=[];
+  for (let i=6;i>=0;i--) { const d=new Date(now); d.setDate(now.getDate()-i); last7.push({label:['Di','Lu','Ma','Me','Je','Ve','Sa'][d.getDay()],min:byDay[getKey(d)]||0}); }
+  const maxMin=Math.max(...last7.map(d=>d.min),1);
+  document.getElementById('timer-bars').innerHTML = last7.map(d=>{
+    const pct=(d.min/maxMin*60).toFixed(1);
+    const col=d.min>=60?'#0891B2':d.min>=30?'#3B82F6':d.min>0?'#93C5FD':'#E2E8F0';
+    return `<div class="sleep-bar-col"><div class="sleep-bar-inner" style="height:${Math.max(pct,d.min>0?4:0)}px;background:${col}"></div><div class="sleep-bar-lbl">${d.label}</div></div>`;
+  }).join('');
+  const recent=[...log].reverse().slice(0,10);
+  document.getElementById('timer-sessions-list').innerHTML = recent.map(s=>{
+    const d=new Date(s.date);
+    const DAYS=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+    const col=s.minutes>=60?'#0891B2':s.minutes>=30?'#3B82F6':'#94A3B8';
+    return `<div class="score-row"><div class="score-dot" style="background:${col}"></div><div class="score-name">${DAYS[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth()+1)} <span style="color:var(--muted);font-size:0.7rem">${pad(d.getHours())}:${pad(d.getMinutes())}</span></div><div class="score-num" style="color:${col};font-weight:700">${s.minutes>=60?fmtH(s.minutes/60):s.minutes+'m'}</div></div>`;
+  }).join('');
+  initTimerDept();
+}
+
+function initTimerDept() {
+  try {
+    const global=JSON.parse(localStorage.getItem('global')||'{}');
+    const pct=Math.round(((global.deptIndex||0)/101)*100);
+    document.getElementById('tm-dept-pct').textContent = Math.min(pct,100)+'%';
+  } catch(e){}
+}
+
+/* ===== RÉCAP ===== */
+function initRecapSelector() {
+  const typeEl=document.getElementById('recap-type');
+  const periodEl=document.getElementById('recap-period');
+  const now=new Date();
+  const MONTHS_FR=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  function fillPeriods() {
+    periodEl.innerHTML='';
+    if (typeEl.value==='month') {
+      for (let i=0;i<13;i++) {
+        const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+        periodEl.innerHTML+=`<option value="${d.getFullYear()+'-'+pad(d.getMonth()+1)}">${MONTHS_FR[d.getMonth()]} ${d.getFullYear()}</option>`;
+      }
+    } else {
+      for (let y=now.getFullYear();y>=2026;y--) periodEl.innerHTML+=`<option value="${y}">${y}</option>`;
+    }
+  }
+  typeEl.addEventListener('change',()=>{fillPeriods();renderRecap();});
+  fillPeriods();
+}
+
+function renderRecap() {
+  const type=document.getElementById('recap-type').value;
+  const period=document.getElementById('recap-period').value;
+  const el=document.getElementById('recap-content');
+  const sleepData=getSleepData(), habitData=getHabitData(), timerLog=getTimerLog();
+  const MONTHS_FR=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  function inPeriod(dateStr) { return dateStr&&dateStr.startsWith(period); }
+  const sleepFiltered=sleepData.filter(e=>inPeriod((e.start||'').slice(0,type==='month'?7:4)));
+  const sleepHours=sleepFiltered.map(e=>e.hours);
+  const sleepAvg=sleepHours.length?sleepHours.reduce((a,b)=>a+b,0)/sleepHours.length:0;
+  const sleepScoreAvg=sleepFiltered.length?Math.round(sleepFiltered.map(calcScore).reduce((a,b)=>a+b,0)/sleepFiltered.length):0;
+  const habitCreatedAt={};
+  habitData.habits.forEach(h => {
+    const firstDay=Object.keys(habitData.log).filter(k=>(habitData.log[k]||[]).includes(h.id)).sort()[0];
+    habitCreatedAt[h.id]=firstDay||'9999-12-31';
+  });
+  let habitDays=0,habitTotal=0,habitDone=0;
+  Object.keys(habitData.log).forEach(k => {
+    if (!inPeriod(k.slice(0,type==='month'?7:4))) return;
+    const activeCount=habitData.habits.filter(h=>habitCreatedAt[h.id]<=k).length;
+    if (!activeCount) return;
+    habitDays++; habitTotal+=activeCount; habitDone+=(habitData.log[k]||[]).length;
+  });
+  const habitRate=habitTotal>0?Math.round(habitDone/habitTotal*100):0;
+  const timerFiltered=timerLog.filter(s=>inPeriod((s.date||'').slice(0,type==='month'?7:4)));
+  const timerMin=timerFiltered.reduce((a,b)=>a+b.minutes,0);
+  let bestMoment='Aucune donnée';
+  if (timerFiltered.length>0) {
+    const dayStats={},hourStats={};
+    const DAYS_FR=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+    timerFiltered.forEach(s=>{
+      const d=new Date(s.date);
+      const dn=DAYS_FR[d.getDay()], hn=d.getHours()+'h';
+      if (!dayStats[dn]) dayStats[dn]={total:0}; dayStats[dn].total+=s.minutes;
+      if (!hourStats[hn]) hourStats[hn]={total:0}; hourStats[hn].total+=s.minutes;
+    });
+    let maxD=0,bestDay='';
+    for (const [d,v] of Object.entries(dayStats)) { if(v.total>maxD){maxD=v.total;bestDay=d;} }
+    let maxH=0,bestHour='';
+    for (const [h,v] of Object.entries(hourStats)) { if(v.total>maxH){maxH=v.total;bestHour=h;} }
+    bestMoment=`${bestDay} vers ${bestHour}`;
+  }
+  let label=period;
+  if (type==='month') { const [y,m]=period.split('-'); label=MONTHS_FR[parseInt(m)-1]+' '+y; }
+  let miniBar='';
+  if (type==='year') {
+    const monthMins=Array(12).fill(0);
+    timerLog.forEach(s=>{ if(s.date&&s.date.startsWith(period)) monthMins[parseInt(s.date.slice(5,7))-1]+=s.minutes; });
+    const maxM=Math.max(...monthMins,1);
+    const ML=['J','F','M','A','M','J','J','A','S','O','N','D'];
+    miniBar=`<div class="month-mini-bar">${monthMins.map((v,i)=>`<div class="month-mini-col"><div class="month-mini-inner" style="height:${Math.max(v/maxM*40,v>0?3:0).toFixed(1)}px;background:var(--cyan)"></div><div class="month-mini-lbl">${ML[i]}</div></div>`).join('')}</div>`;
+  } else {
+    const weekMins=[0,0,0,0,0];
+    timerLog.forEach(s=>{ if(s.date&&s.date.startsWith(period)) weekMins[Math.min(Math.floor((parseInt(s.date.slice(8,10))-1)/7),4)]+=s.minutes; });
+    const maxW=Math.max(...weekMins,1);
+    miniBar=`<div class="month-mini-bar">${weekMins.map((v,i)=>`<div class="month-mini-col"><div class="month-mini-inner" style="height:${Math.max(v/maxW*40,v>0?3:0).toFixed(1)}px;background:var(--cyan)"></div><div class="month-mini-lbl">S${i+1}</div></div>`).join('')}</div>`;
+  }
+  el.innerHTML=`
+    <div class="recap-block">
+      <div class="recap-block-title">😴 Sommeil — ${label}</div>
+      ${sleepFiltered.length===0?'<div class="empty">Aucune donnée</div>':`
+      <div class="recap-row"><span>Nuits enregistrées</span><span class="recap-row-val" style="color:var(--blue)">${sleepFiltered.length}</span></div>
+      <div class="recap-row"><span>Durée moyenne</span><span class="recap-row-val" style="color:var(--green)">${fmtH(sleepAvg)}</span></div>
+      <div class="recap-row"><span>Meilleure nuit</span><span class="recap-row-val" style="color:var(--green)">${fmtH(Math.max(...sleepHours))}</span></div>
+      <div class="recap-row"><span>Nuit la plus courte</span><span class="recap-row-val" style="color:var(--red)">${fmtH(Math.min(...sleepHours))}</span></div>
+      <div class="recap-row"><span>Score moyen</span><span class="recap-row-val" style="color:${scoreColor(sleepScoreAvg)}">${sleepScoreAvg}/100</span></div>`}
+    </div>
+    <div class="recap-block">
+      <div class="recap-block-title">🎯 Habitudes — ${label}</div>
+      ${habitDays===0?'<div class="empty">Aucune donnée</div>':`
+      <div class="recap-row"><span>Jours avec activité</span><span class="recap-row-val" style="color:var(--blue)">${habitDays}</span></div>
+      <div class="recap-row"><span>Complétions totales</span><span class="recap-row-val" style="color:var(--green)">${habitDone}</span></div>
+      <div class="recap-row"><span>Taux de réussite</span><span class="recap-row-val" style="color:${habitRate>=70?'var(--green)':habitRate>=40?'var(--orange)':'var(--red)'}">${habitRate}%</span></div>`}
+    </div>
+    <div class="recap-block">
+      <div class="recap-block-title">⏱️ Travail — ${label}</div>
+      ${timerFiltered.length===0?'<div class="empty">Aucune session enregistrée</div>':`
+      <div class="recap-row"><span>Sessions</span><span class="recap-row-val" style="color:var(--blue)">${timerFiltered.length}</span></div>
+      <div class="recap-row"><span>Temps total</span><span class="recap-row-val" style="color:var(--cyan)">${timerMin>=60?fmtH(timerMin/60):timerMin+'m'}</span></div>
+      <div class="recap-row"><span>Moyenne/session</span><span class="recap-row-val" style="color:var(--cyan)">${Math.round(timerMin/timerFiltered.length)>=60?fmtH(Math.round(timerMin/timerFiltered.length)/60):Math.round(timerMin/timerFiltered.length)+'m'}</span></div>
+      <div class="recap-row"><span>Pic de productivité</span><span class="recap-row-val" style="color:var(--purple)">${bestMoment}</span></div>
+      ${miniBar}`}
+    </div>`;
+}
+
+/* ===== EXPORT JSON ===== */
+function exportJSON(scope) {
+  const keys={all:['sleep_entries_v2','habitData','taches','tachesFaites','timerLog','taskStats','XP','global','mytracker_notes'],sleep:['sleep_entries_v2'],habits:['habitData'],timer:['timerLog','global'],notes:['mytracker_notes']};
+  const toExport=keys[scope||'all'];
+  const data={};
+  toExport.forEach(k=>{ const v=localStorage.getItem(k); if(v!==null){try{data[k]=JSON.parse(v);}catch(e){data[k]=v;}} });
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const now=new Date();
+  a.href=url;
+  a.download=`mytracker${scope&&scope!=='all'?'_'+scope:'_'}${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* =====================================================
+   SYNC CLOUD — Stratégie propre et sans boucle
+   
+   Règle unique : le serveur stocke un champ updated_at.
+   Au chargement, on compare updated_at du serveur avec
+   SYNC_SERVER_TS (le dernier updated_at connu localement).
+   
+   - Si serveur > local  → PULL (données serveur plus fraîches)
+   - Si local >= serveur → PUSH (données locales plus fraîches)
+   - Après un PULL, on stocke le updated_at du serveur comme
+     SYNC_SERVER_TS pour ne pas repuller au prochain chargement.
+   - Après un PUSH, le serveur retourne son nouveau updated_at
+     qu'on stocke aussi comme SYNC_SERVER_TS.
+   
+   Ainsi la comparaison utilise toujours l'horloge du SERVEUR,
+   pas celle du navigateur — zéro risque de décalage.
+===================================================== */
+
+const SYNC_API       = 'https://mytracker.free.nf/api.php'; // ⚙️ ton URL
+const SYNC_TOKEN_KEY = 'mytracker_sync_token';
+const SYNC_EMAIL_KEY = 'mytracker_sync_email';
+const SYNC_SERVER_TS = 'mytracker_sync_server_ts'; // dernière updated_at connue (vient du serveur)
+
+let syncTimer = null;
+
+function syncSetStatus(msg, type) {
+  const el=document.getElementById('sync-status');
+  if (!el) return;
+  el.textContent=msg;
+  el.className='sync-status '+type;
+}
+
+function syncUpdateUI() {
+  const token=localStorage.getItem(SYNC_TOKEN_KEY);
+  const email=localStorage.getItem(SYNC_EMAIL_KEY);
+  document.getElementById('sync-login-block').style.display  = token ? 'none'  : 'block';
+  document.getElementById('sync-logged-block').style.display = token ? 'block' : 'none';
+  if (email) document.getElementById('sync-email-display').textContent=email;
+}
+
+async function syncRequest(action, body) {
+  const res=await fetch(SYNC_API,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action,...body})
+  });
+  return res.json();
+}
+
+/* PUSH : envoie le localStorage → serveur
+   Le serveur retourne updated_at → on le stocke */
+async function syncPush(silent) {
+  const token=localStorage.getItem(SYNC_TOKEN_KEY);
+  if (!token) return;
+  if (!silent) syncSetStatus('Sauvegarde…','loading');
+  try {
+    const r=await syncRequest('push',{token,data:getAllData()});
+    if (r.ok) {
+      if (r.updated_at) localStorage.setItem(SYNC_SERVER_TS, r.updated_at);
+      const now=new Date();
+      syncSetStatus('☁️ Sync '+now.toLocaleDateString('fr-FR')+' à '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),'ok');
+    } else if (r.error==='invalid_token') {
+      syncLogout(); syncSetStatus('Session expirée, reconnecte-toi.','err');
+    }
+  } catch(e) { if (!silent) syncSetStatus('Serveur inaccessible.','err'); }
+}
+
+/* PULL : récupère les données du serveur → localStorage
+   Applique sans recharger la page, réinitialise l'UI */
+async function syncPull() {
+  const token=localStorage.getItem(SYNC_TOKEN_KEY);
+  if (!token) return;
+  try {
+    const r=await syncRequest('pull',{token});
+    if (!r.ok) {
+      // Pas de données sur le serveur → on push ce qu'on a
+      if (r.error!=='invalid_token') syncPush(false);
+      else { syncLogout(); syncSetStatus('Session expirée, reconnecte-toi.','err'); }
+      return;
+    }
+    const serverTs  = r.updated_at  || null;
+    const knownTs   = localStorage.getItem(SYNC_SERVER_TS) || null;
+
+    // Le serveur est plus récent seulement si son ts est STRICTEMENT supérieur
+    // à ce qu'on avait mémorisé après notre dernier push/pull
+    const serverIsNewer = serverTs && (!knownTs || serverTs > knownTs);
+
+    if (!serverIsNewer) {
+      // On a déjà ce que le serveur a (ou mieux) → push
+      syncPush(true);
+      return;
+    }
+
+    // Applique les données du serveur dans le localStorage
+    const d=r.data||{};
+    Object.keys(d).forEach(k => {
+      localStorage.setItem(k, typeof d[k]==='string' ? d[k] : JSON.stringify(d[k]));
+    });
+    // Mémorise le ts du serveur pour ne pas repuller au prochain chargement
+    localStorage.setItem(SYNC_SERVER_TS, serverTs);
+
+    syncSetStatus('☁️ Données récupérées depuis le cloud','ok');
+
+    // Rafraîchit l'UI sur place, sans reload
+    initGlobal(); initSleep(); initHabits(); initTasks(); initTimer();
+    initRecapSelector(); renderRecap();
+
+  } catch(e) { /* silencieux au chargement */ }
+}
+
+/* Démarre la sync automatique */
+function initAutoSync() {
+  const token=localStorage.getItem(SYNC_TOKEN_KEY);
+  if (!token) return;
+  // Pull au chargement (compare ts serveur vs ts connu)
+  syncPull();
+  // Push toutes les 5 minutes
+  if (syncTimer) clearInterval(syncTimer);
+  syncTimer=setInterval(()=>syncPush(true), 5*60*1000);
+  
+}
+
+
+/* LOGIN / REGISTER / LOGOUT */
+async function syncRegister() {
+  const email=document.getElementById('sync-email').value.trim();
+  const password=document.getElementById('sync-password').value;
+  if (!email||!password) return syncSetStatus('Remplis les deux champs.','err');
+  syncSetStatus('Création du compte…','loading');
+  try {
+    const r=await syncRequest('register',{email,password});
+    if (r.ok) {
+      localStorage.setItem(SYNC_TOKEN_KEY,r.token);
+      localStorage.setItem(SYNC_EMAIL_KEY,email);
+      // Pas de ts connu → premier push
+      localStorage.removeItem(SYNC_SERVER_TS);
+      syncSetStatus('Compte créé !','ok');
+      syncUpdateUI(); initAutoSync();
+    } else syncSetStatus(r.error||'Erreur.','err');
+  } catch(e) { syncSetStatus('Serveur inaccessible.','err'); }
+}
+
+async function syncLogin() {
+  const email=document.getElementById('sync-email').value.trim();
+  const password=document.getElementById('sync-password').value;
+  if (!email||!password) return syncSetStatus('Remplis les deux champs.','err');
+  syncSetStatus('Connexion…','loading');
+  try {
+    const r=await syncRequest('login',{email,password});
+    if (r.ok) {
+      localStorage.setItem(SYNC_TOKEN_KEY,r.token);
+      localStorage.setItem(SYNC_EMAIL_KEY,email);
+      // On ne connaît pas le ts du serveur → pull forcé au démarrage
+      localStorage.removeItem(SYNC_SERVER_TS);
+      syncSetStatus('Connecté !','ok');
+      syncUpdateUI(); initAutoSync();
+    } else syncSetStatus(r.error||'Email ou mot de passe incorrect.','err');
+  } catch(e) { syncSetStatus('Serveur inaccessible.','err'); }
+}
+
+function syncLogout() {
+  localStorage.removeItem(SYNC_TOKEN_KEY);
+  localStorage.removeItem(SYNC_EMAIL_KEY);
+  localStorage.removeItem(SYNC_SERVER_TS);
+  if (syncTimer) clearInterval(syncTimer);
+  document.getElementById('sync-status').className='sync-status';
+  syncUpdateUI();
+}
+
+/* ===== INIT ===== */
+initGlobal();
+initSleep();
+initHabits();
+initTasks();
+initTimer();
+initRecapSelector();
+renderRecap();
+syncUpdateUI();
+initAutoSync();
+</script>
+</body>
+</html>
